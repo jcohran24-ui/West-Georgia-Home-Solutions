@@ -145,9 +145,52 @@ function pick(k,v){lead[k]=v;step++;renderLead()}
 function zipNext(e){e.preventDefault();lead.zip=document.getElementById("zip").value.trim();lead.city=SERVICE_ZIPS[lead.zip]||"Outside launch area";step++;renderLead()}
 function detailsNext(e){e.preventDefault();lead.details=document.getElementById("details").value.trim();step++;renderLead()}
 function routeLead(x){return (PARTNER_ROUTES[x.service]||{})[x.zip]||"Unmatched — Needs Partner"}
-function submitLead(e){e.preventDefault();["name","phone","email","address"].forEach(k=>lead[k]=document.getElementById(k).value.trim());lead.price=PRICE[lead.service]||40;lead.route=routeLead(lead);let a=JSON.parse(localStorage.getItem("wghs_leads")||"[]");a.unshift(lead);localStorage.setItem("wghs_leads",JSON.stringify(a));alert("Demo lead saved and routing decision created.");show("admin");renderAdmin()}
+async function submitLead(e){
+  e.preventDefault();
+  ["name","phone","email","address"].forEach(k=>lead[k]=document.getElementById(k).value.trim());
+  const btn=e.target.querySelector("button[type=submit]");
+  if(btn){btn.disabled=true;btn.textContent="Submitting...";}
+  try{
+    const r=await fetch("/api/leads",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(lead)
+    });
+    const j=await r.json();
+    if(!r.ok||!j.ok) throw new Error(j.error||"Unable to save lead");
+    alert("Thank you. Your request has been received.");
+    lead={}; step=0; show("home");
+  }catch(err){
+    console.error("Lead submission failed:",err);
+    alert("We could not save your request. Please try again.");
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent="Submit Request";}
+  }
+}
 function openPartnerForm(plan){const b=document.getElementById("partnerBox");b.classList.remove("hide");b.innerHTML=`<div class="eyebrow">${plan.toUpperCase()}</div><h2>Partner application</h2><form class="stack" onsubmit="savePartner(event,${JSON.stringify(plan)})"><label>Business name<input name="business" required></label><label>Contact name<input name="name" required></label><label>Phone<input name="phone" required></label><label>Email<input type="email" name="email" required></label><label>Service<select name="service" required><option>Roofing</option><option>HVAC</option><option>Concrete</option><option>Tree Removal</option><option>Electrical</option><option>Drywall Finishing</option><option>Painting</option><option>Plumbing</option><option>Real Estate Investor</option></select></label><label>Counties / ZIP codes<textarea name="area" required placeholder="Example: Carroll, Haralson / 30110, 30117"></textarea></label><button class="btn primary">Submit Partner Request</button></form>`;b.scrollIntoView({behavior:"smooth"})}
-function savePartner(e,plan){e.preventDefault();let d=Object.fromEntries(new FormData(e.target).entries());d.plan=plan;d.created=new Date().toISOString();let a=JSON.parse(localStorage.getItem("wghs_partners")||"[]");a.unshift(d);localStorage.setItem("wghs_partners",JSON.stringify(a));alert("Partner request saved in this browser.");show("admin");renderAdmin()}
+async function savePartner(e,plan){
+  e.preventDefault();
+  let d=Object.fromEntries(new FormData(e.target).entries());
+  d.plan=plan;
+  const btn=e.target.querySelector("button[type=submit]");
+  if(btn){btn.disabled=true;btn.textContent="Submitting...";}
+  try{
+    const r=await fetch("/api/partners",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify(d)
+    });
+    const j=await r.json();
+    if(!r.ok||!j.ok) throw new Error(j.error||"Unable to save application");
+    alert("Partner application received.");
+    show("home");
+  }catch(err){
+    console.error("Partner application failed:",err);
+    alert("We could not save your application. Please try again.");
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent="Submit Partner Request";}
+  }
+}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function renderAdmin(){
   const key=sessionStorage.getItem("wghs_admin_key") || prompt("Enter admin key:");
