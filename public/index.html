@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>West Georgia Home Solutions</title>
+<style>
+:root{--green:#1f5a37;--green2:#2f7448;--ink:#172018;--muted:#657067;--bg:#f6f8f5;--card:#fff;--line:#dfe5df}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.hide{display:none!important}
+header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.97);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;padding:12px 18px}
+.brand{display:flex;align-items:center;gap:10px}.mark{width:42px;height:42px;border-radius:12px;background:var(--green);color:#fff;display:grid;place-items:center;font-weight:800}.brandtext{display:flex;flex-direction:column;line-height:1.05}.brandtext span{font-size:12px;color:var(--muted)}
+nav{display:flex;gap:8px;flex-wrap:wrap}.btn{border:none;border-radius:12px;padding:12px 16px;font-weight:700}.primary{background:var(--green);color:#fff}.secondary{background:#fff;color:var(--green);border:1px solid #b9c8bc}.ghost{background:transparent;color:var(--green)}
+.hero{padding:68px 20px 48px;text-align:center;background:linear-gradient(180deg,#eaf4ec,#f6f8f5)}.eyebrow{font-size:12px;letter-spacing:1.5px;font-weight:800;color:#3e7650}.hero h1{font-size:clamp(38px,8vw,62px);line-height:1.02;margin:10px auto 14px;max-width:850px}.hero p{max-width:700px;margin:0 auto 24px;color:var(--muted);font-size:18px;line-height:1.6}.trust{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;color:#58645b;font-size:14px;margin-top:18px}
+.section{max-width:1120px;margin:auto;padding:52px 20px}.section h2{font-size:34px;margin:8px 0 20px}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 7px 24px rgba(0,0,0,.04)}.service{min-height:170px;text-align:left;display:flex;flex-direction:column;gap:9px}.service span{font-size:30px}.service strong{font-size:18px}.service small{color:var(--muted);line-height:1.4}
+.city-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.city{background:white;border:1px solid var(--line);padding:14px;border-radius:12px;text-align:center;font-weight:700}
+.panel{max-width:820px;margin:30px auto 70px;background:#fff;border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:0 12px 40px rgba(0,0,0,.06)}.panel h1{font-size:40px;margin:8px 0 14px}.muted{color:var(--muted);line-height:1.55}.stack{display:flex;flex-direction:column;gap:16px}.stack label{font-weight:700;display:flex;flex-direction:column;gap:7px}input,select,textarea{width:100%;padding:14px;border:1px solid #cbd5cc;border-radius:11px;background:#fff}textarea{min-height:120px}.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.choice{background:#fafcfa;border:1px solid #d5ddd5;border-radius:13px;padding:18px;text-align:left;font-weight:700}.progress{height:8px;background:#e9eee9;border-radius:999px;overflow:hidden;margin:12px 0 26px}.progress>div{height:100%;background:var(--green2);width:20%}
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.price h3{font-size:24px;margin:0 0 8px}.amount{font-size:36px;font-weight:800;margin:8px 0}.price ul{padding-left:20px;color:var(--muted);line-height:1.7}.popular{border:2px solid var(--green);position:relative}.badge{position:absolute;top:-12px;right:16px;background:var(--green);color:#fff;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:800}
+.admin{max-width:1150px;margin:28px auto 70px;padding:0 20px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.stat{background:#fff;border:1px solid var(--line);border-radius:16px;padding:19px}.stat span{display:block;color:var(--muted);margin-bottom:8px}.stat strong{font-size:30px}.tablewrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:18px}table{width:100%;border-collapse:collapse;min-width:780px}th,td{text-align:left;padding:12px;border-bottom:1px solid #edf0ed;font-size:14px}.route{font-weight:700;color:var(--green)}
+footer{background:#172018;color:#dce5dd;padding:28px 20px;text-align:center}.fine{font-size:12px;line-height:1.5;color:#7a837c}
+@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}.city-grid{grid-template-columns:1fr 1fr}.price-grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){header{padding:10px 12px}.brandtext strong{font-size:14px}.brandtext span{font-size:11px}nav .btn{padding:9px 10px;font-size:12px}.grid,.choice-grid{grid-template-columns:1fr}.service{min-height:120px}.panel{margin:18px 14px 55px;padding:20px}.panel h1{font-size:34px}.stats{grid-template-columns:1fr 1fr}.hero{padding-top:46px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="mark">WG</div><div class="brandtext"><strong>West Georgia</strong><span>Home Solutions</span></div></div>
+  <nav>
+    <button class="btn ghost" onclick="show('home')">Home</button>
+    <button class="btn secondary" onclick="show('partners')">For Contractors</button>
+    <button class="btn primary" onclick="show('admin');renderAdmin()">Admin Demo</button>
+  </nav>
+</header>
+
+<section id="home">
+  <div class="hero">
+    <div class="eyebrow">WEST GEORGIA HOMEOWNER MATCHING</div>
+    <h1>One request. One local connection.</h1>
+    <p>Tell us what you need and we’ll match your request with a local professional serving your area.</p>
+    <button class="btn primary" onclick="document.getElementById('services').scrollIntoView({behavior:'smooth'})">Get a Free Quote</button>
+    <div class="trust"><span>✓ Free request</span><span>✓ Local professionals</span><span>✓ No endless sales calls</span></div>
+  </div>
+
+  <div id="services" class="section">
+    <div class="eyebrow">START HERE</div><h2>What do you need help with?</h2>
+    <div class="grid">
+      <button class="card service" onclick="startLead('Sell My House Fast')"><span>🏠</span><strong>Sell My House Fast</strong><small>Property, land, rentals and inherited homes.</small></button>
+      <button class="card service" onclick="startLead('Roofing')"><span>🔨</span><strong>Roofing</strong><small>Repairs, replacement, leaks and storm damage.</small></button>
+      <button class="card service" onclick="startLead('HVAC')"><span>❄️</span><strong>Heating & Air</strong><small>Repairs, replacement and maintenance.</small></button>
+      <button class="card service" onclick="startLead('Concrete')"><span>🧱</span><strong>Concrete</strong><small>Driveways, slabs, patios and repairs.</small></button>
+      <button class="card service" onclick="startLead('Tree Removal')"><span>🌳</span><strong>Tree Removal</strong><small>Removal, trimming, storm cleanup and stumps.</small></button>
+      <button class="card service" onclick="startLead('Electrical')"><span>⚡</span><strong>Electrical</strong><small>Repairs, panel upgrades, lighting and new circuits.</small></button>
+      <button class="card service" onclick="startLead('Drywall Finishing')"><span>🧰</span><strong>Drywall Finishing</strong><small>Hanging, finishing, repairs, texture and patchwork.</small></button>
+      <button class="card service" onclick="startLead('Painting')"><span>🎨</span><strong>Painting</strong><small>Interior, exterior, trim, cabinets and touch-ups.</small></button>
+      <button class="card service" onclick="startLead('Plumbing')"><span>🚿</span><strong>Plumbing</strong><small>Leaks, fixtures, water heaters, drains and repiping.</small></button>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="eyebrow">INITIAL SERVICE AREA</div><h2>West Georgia launch markets</h2>
+    <div class="city-grid">
+      <div class="city">Bremen</div><div class="city">Carrollton</div><div class="city">Temple</div><div class="city">Villa Rica</div>
+      <div class="city">Douglasville</div><div class="city">Dallas</div><div class="city">Cedartown</div><div class="city">Newnan</div>
+    </div>
+  </div>
+</section>
+
+<section id="lead" class="hide">
+  <div class="panel">
+    <button class="btn ghost" onclick="show('home')">← Back</button>
+    <div class="progress"><div id="progress"></div></div>
+    <div id="leadHost"></div>
+  </div>
+</section>
+
+<section id="partners" class="hide">
+  <div class="section">
+    <div class="eyebrow">CONTRACTOR PARTNERS</div><h2>Choose how you want to buy leads</h2>
+    <div class="price-grid">
+      <div class="card price"><h3>Pay Per Lead</h3><div class="amount">$40–$125</div><div class="muted">per qualified lead</div><ul><li>No long-term contract</li><li>Choose service area</li><li>Good for proving ROI</li></ul><button class="btn primary" onclick="openPartnerForm('Pay Per Lead')">Apply</button></div>
+      <div class="card price popular"><div class="badge">RECOMMENDED</div><h3>Growth</h3><div class="amount">$499</div><div class="muted">per month</div><ul><li>Up to 12 qualified leads</li><li>Priority routing</li><li>Lead history dashboard</li></ul><button class="btn primary" onclick="openPartnerForm('Growth')">Apply</button></div>
+      <div class="card price"><h3>Exclusive</h3><div class="amount">$799+</div><div class="muted">per month</div><ul><li>Exclusive category/territory</li><li>First-right-of-refusal routing</li><li>Custom volume</li></ul><button class="btn primary" onclick="openPartnerForm('Exclusive')">Apply</button></div>
+    </div>
+    <div id="partnerBox" class="panel hide"></div>
+  </div>
+</section>
+
+<section id="admin" class="hide">
+  <div class="admin">
+    <div class="eyebrow">ADMIN DEMO</div><h1>Lead Routing Dashboard</h1>
+    <p class="muted">This prototype simulates routing by service + ZIP. A live deployment would replace browser storage with a hosted database and authenticated admin account.</p>
+    <div class="stats">
+      <div class="stat"><span>Total Leads</span><strong id="sTotal">0</strong></div>
+      <div class="stat"><span>Demo Revenue</span><strong id="sRevenue">$0</strong></div>
+      <div class="stat"><span>Partner Requests</span><strong id="sPartners">0</strong></div>
+      <div class="stat"><span>Unmatched Leads</span><strong id="sUnmatched">0</strong></div>
+    </div>
+    <div class="tablewrap"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><h2>Recent Leads</h2><button class="btn secondary" onclick="clearData()">Clear Demo Data</button></div><div id="leadTable"></div></div>
+  </div>
+</section>
+
+<footer>
+  <strong>West Georgia Home Solutions</strong><br>
+  <span class="fine">Prototype matching service. Live launch should include privacy policy, terms, provider disclosures, consent language and secure data handling.</span>
+</footer>
+
+<script>
+const SERVICE_ZIPS = {
+  "30110":"Bremen","30117":"Carrollton","30179":"Temple","30180":"Villa Rica",
+  "30134":"Douglasville","30135":"Douglasville","30132":"Dallas","30125":"Cedartown","30263":"Newnan","30265":"Newnan"
+};
+const PARTNER_ROUTES = {
+  "Roofing":{"30110":"Founding Roofing Partner","30117":"Founding Roofing Partner"},
+  "Concrete":{"30110":"Founding Concrete Partner","30117":"Founding Concrete Partner"},
+  "HVAC":{"30110":"Founding HVAC Partner"},
+  "Tree Removal":{"30110":"Founding Tree Partner"},
+  "Sell My House Fast":{"30110":"Investor Partner","30117":"Investor Partner"}
+};
+const PRICE = {"Sell My House Fast":125,"Roofing":65,"HVAC":50,"Concrete":45,"Tree Removal":40,"Electrical":50,"Drywall Finishing":35,"Painting":35,"Plumbing":50};
+const QUESTIONS = {
+ "Concrete":["Driveway","Patio","Slab","Sidewalk","Retaining Wall","Concrete Repair","Other"],
+ "Roofing":["Roof Repair","Roof Replacement","Storm Damage","Roof Inspection","Leak","Other"],
+ "HVAC":["AC Repair","Heating Repair","System Replacement","Maintenance","Indoor Air Quality","Other"],
+ "Tree Removal":["Tree Removal","Tree Trimming","Storm Cleanup","Stump Grinding","Emergency Service","Other"],
+ "Electrical":["Electrical Repair","Panel Upgrade","Lighting","New Circuit / Outlet","Generator / Transfer Switch","Other"],
+ "Drywall Finishing":["New Drywall","Tape & Mud","Drywall Repair","Ceiling Repair","Texture / Smooth Finish","Other"],
+ "Painting":["Interior Painting","Exterior Painting","Trim / Doors","Cabinet Painting","Touch-Up / Repair","Other"],
+ "Plumbing":["Leak Repair","Water Heater","Fixture Installation","Drain / Sewer","Repiping","Other"],
+ "Sell My House Fast":["House","Land","Rental Property","Inherited Property","Vacant Property","Other"]
+};
+let lead={},step=0;
+
+function show(id){["home","lead","partners","admin"].forEach(x=>document.getElementById(x).classList.toggle("hide",x!==id));window.scrollTo(0,0)}
+function startLead(service){lead={service,created:new Date().toISOString()};step=0;show("lead");renderLead()}
+function renderLead(){
+ document.getElementById("progress").style.width=((step+1)*20)+"%";
+ const h=document.getElementById("leadHost");
+ if(step===0) h.innerHTML=`<div class="eyebrow">${lead.service.toUpperCase()}</div><h1>${lead.service==="Sell My House Fast"?"What type of property is it?":"What do you need help with?"}</h1><div class="choice-grid">${QUESTIONS[lead.service].map(x=>`<button class="choice" onclick='pick("project",${JSON.stringify(x)})'>${x}</button>`).join("")}</div>`;
+ else if(step===1) h.innerHTML=`<h1>${lead.service==="Sell My House Fast"?"When would you like to sell?":"When would you like to start?"}</h1><div class="choice-grid">${["ASAP","Within 30 days","1–3 months","Just researching"].map(x=>`<button class="choice" onclick='pick("timeline",${JSON.stringify(x)})'>${x}</button>`).join("")}</div>`;
+ else if(step===2) h.innerHTML=`<h1>Where is the property?</h1><form class="stack" onsubmit="zipNext(event)"><label>ZIP code<input id="zip" required inputmode="numeric" maxlength="5" pattern="[0-9]{5}" placeholder="30110"></label><button class="btn primary">Continue</button></form>`;
+ else if(step===3) h.innerHTML=`<h1>Tell us a little more.</h1><form class="stack" onsubmit="detailsNext(event)"><label>Project details<textarea id="details" required placeholder="Describe the project or property situation..."></textarea></label><button class="btn primary">Continue</button></form>`;
+ else h.innerHTML=`<h1>Where should the local pro contact you?</h1><form class="stack" onsubmit="submitLead(event)"><label>Name<input id="name" required></label><label>Phone<input id="phone" required inputmode="tel"></label><label>Email<input id="email" required type="email"></label><label>Property address<input id="address" required></label><button class="btn primary">Submit Request</button><div class="fine">Production launch: replace this placeholder with attorney-reviewed consent and lead-sharing language appropriate to the markets and contact methods used.</div></form>`;
+}
+function pick(k,v){lead[k]=v;step++;renderLead()}
+function zipNext(e){e.preventDefault();lead.zip=document.getElementById("zip").value.trim();lead.city=SERVICE_ZIPS[lead.zip]||"Outside launch area";step++;renderLead()}
+function detailsNext(e){e.preventDefault();lead.details=document.getElementById("details").value.trim();step++;renderLead()}
+function routeLead(x){return (PARTNER_ROUTES[x.service]||{})[x.zip]||"Unmatched — Needs Partner"}
+function submitLead(e){e.preventDefault();["name","phone","email","address"].forEach(k=>lead[k]=document.getElementById(k).value.trim());lead.price=PRICE[lead.service]||40;lead.route=routeLead(lead);let a=JSON.parse(localStorage.getItem("wghs_leads")||"[]");a.unshift(lead);localStorage.setItem("wghs_leads",JSON.stringify(a));alert("Demo lead saved and routing decision created.");show("admin");renderAdmin()}
+function openPartnerForm(plan){const b=document.getElementById("partnerBox");b.classList.remove("hide");b.innerHTML=`<div class="eyebrow">${plan.toUpperCase()}</div><h2>Partner application</h2><form class="stack" onsubmit="savePartner(event,${JSON.stringify(plan)})"><label>Business name<input name="business" required></label><label>Contact name<input name="name" required></label><label>Phone<input name="phone" required></label><label>Email<input type="email" name="email" required></label><label>Service<select name="service" required><option>Roofing</option><option>HVAC</option><option>Concrete</option><option>Tree Removal</option><option>Electrical</option><option>Drywall Finishing</option><option>Painting</option><option>Plumbing</option><option>Real Estate Investor</option></select></label><label>Counties / ZIP codes<textarea name="area" required placeholder="Example: Carroll, Haralson / 30110, 30117"></textarea></label><button class="btn primary">Submit Partner Request</button></form>`;b.scrollIntoView({behavior:"smooth"})}
+function savePartner(e,plan){e.preventDefault();let d=Object.fromEntries(new FormData(e.target).entries());d.plan=plan;d.created=new Date().toISOString();let a=JSON.parse(localStorage.getItem("wghs_partners")||"[]");a.unshift(d);localStorage.setItem("wghs_partners",JSON.stringify(a));alert("Partner request saved in this browser.");show("admin");renderAdmin()}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function renderAdmin(){let l=JSON.parse(localStorage.getItem("wghs_leads")||"[]"),p=JSON.parse(localStorage.getItem("wghs_partners")||"[]");document.getElementById("sTotal").textContent=l.length;document.getElementById("sRevenue").textContent="$"+l.reduce((a,x)=>a+(+x.price||0),0).toLocaleString();document.getElementById("sPartners").textContent=p.length;document.getElementById("sUnmatched").textContent=l.filter(x=>String(x.route).startsWith("Unmatched")).length;document.getElementById("leadTable").innerHTML=l.length?`<table><thead><tr><th>Date</th><th>Service</th><th>Name</th><th>City/ZIP</th><th>Project</th><th>Route</th><th>Value</th></tr></thead><tbody>${l.map(x=>`<tr><td>${new Date(x.created).toLocaleDateString()}</td><td>${esc(x.service)}</td><td>${esc(x.name)}</td><td>${esc(x.city)} ${esc(x.zip)}</td><td>${esc(x.project)}</td><td class="route">${esc(x.route)}</td><td>$${x.price||0}</td></tr>`).join("")}</tbody></table>`:`<p class="muted">No demo leads yet.</p>`}
+function clearData(){if(confirm("Clear all local demo data?")){localStorage.removeItem("wghs_leads");localStorage.removeItem("wghs_partners");renderAdmin()}}
+</script>
+</body>
+</html>
