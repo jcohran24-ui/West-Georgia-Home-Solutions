@@ -1,0 +1,56 @@
+{
+  "launch_markets": [
+    {
+      "city": "Bremen",
+      "zip": "30110"
+    },
+    {
+      "city": "Carrollton",
+      "zip": "30117"
+    },
+    {
+      "city": "Temple",
+      "zip": "30179"
+    },
+    {
+      "city": "Villa Rica",
+      "zip": "30180"
+    },
+    {
+      "city": "Douglasville",
+      "zip": "30134"
+    },
+    {
+      "city": "Douglasville",
+      "zip": "30135"
+    },
+    {
+      "city": "Dallas",
+      "zip": "30132"
+    },
+    {
+      "city": "Cedartown",
+      "zip": "30125"
+    },
+    {
+      "city": "Newnan",
+      "zip": "30263"
+    },
+    {
+      "city": "Newnan",
+      "zip": "30265"
+    }
+  ],
+  "starting_lead_prices": {
+    "Sell My House Fast": 125,
+    "Roofing": 65,
+    "HVAC": 50,
+    "Concrete": 45,
+    "Tree Removal": 40,
+    "Electrical": 50,
+    "Drywall Finishing": 35,
+    "Painting": 35,
+    "Plumbing": 50
+  },
+  "routing_rule": "Match service + ZIP to an active partner. If no active partner exists, hold as unmatched and alert admin."
+}

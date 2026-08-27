@@ -1,0 +1,12 @@
+{
+  "name": "west-ga-home-solutions",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
