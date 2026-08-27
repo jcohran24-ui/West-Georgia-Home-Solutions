@@ -1,12 +1,12 @@
 {
   "name": "west-ga-home-solutions",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
-    "start": "node server/server.js",
-    "dev": "node server/server.js"
+    "start": "node server/server.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.57.4",
     "express": "^5.1.0"
   }
 }
