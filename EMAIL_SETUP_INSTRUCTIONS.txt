@@ -1,0 +1,57 @@
+EMAIL NOTIFICATIONS FOR NEW LEADS + CONTRACTORS
+
+WHAT THIS UPDATE DOES
+- Sends you an email after a homeowner lead is successfully saved in Supabase.
+- Sends you an email after a contractor application is successfully saved.
+- Email contains the submitted details and a button to open /admin.
+- If email delivery fails, the lead/application STILL remains saved in Supabase.
+
+1) CREATE A RESEND ACCOUNT
+Go to:
+https://resend.com
+
+Create an API key.
+
+2) ADD THESE RENDER ENVIRONMENT VARIABLES
+
+RESEND_API_KEY
+Value: your Resend API key beginning with re_
+
+NOTIFY_EMAIL
+Value: the email address where you want alerts delivered
+
+RESEND_FROM
+For initial testing:
+West Georgia Home Solutions <onboarding@resend.dev>
+
+SITE_URL
+https://west-georgia-home-solutions.onrender.com
+
+IMPORTANT:
+Never put RESEND_API_KEY into GitHub or public/index.html.
+
+3) GITHUB
+Replace:
+- server/server.js
+- package.json
+
+You do NOT need to replace public/index.html for email notifications.
+
+4) RENDER
+Deploy the latest commit. package.json now installs the Resend Node SDK.
+
+5) TEST
+Submit:
+- one test homeowner lead
+- one test contractor application
+
+Both should appear in /admin, and you should receive separate email notifications.
+
+PRODUCTION SENDER
+For a professional sender such as:
+leads@yourdomain.com
+
+verify your own domain in Resend, then change RESEND_FROM in Render.
+
+NOTE
+Resend's Node/Express API sends these notifications server-side. The API key stays private.

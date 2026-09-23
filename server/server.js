@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const { createClient } = require("@supabase/supabase-js");
+const { Resend } = require("resend");
 
 const app = express();
 app.use(express.json({ limit: "1mb" }));
@@ -19,6 +20,61 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SEC
   auth: { persistSession: false, autoRefreshToken: false }
 });
 const ADMIN_KEY = process.env.ADMIN_KEY || "";
+
+const RESEND_API_KEY = process.env.RESEND_API_KEY || "";
+const NOTIFY_EMAIL = process.env.NOTIFY_EMAIL || "";
+const RESEND_FROM = process.env.RESEND_FROM || "West Georgia Home Solutions <onboarding@resend.dev>";
+const SITE_URL = process.env.SITE_URL || "https://west-georgia-home-solutions.onrender.com";
+const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
+
+function htmlEscape(value){
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+async function sendAdminNotification({subject, heading, fields}){
+  if(!resend || !NOTIFY_EMAIL){
+    console.warn("Email notification skipped: RESEND_API_KEY or NOTIFY_EMAIL missing.");
+    return {sent:false, skipped:true};
+  }
+
+  const rows = fields.map(([label,value]) => `
+    <tr>
+      <td style="padding:7px 10px;border-bottom:1px solid #e7e7e7;font-weight:700;vertical-align:top">${htmlEscape(label)}</td>
+      <td style="padding:7px 10px;border-bottom:1px solid #e7e7e7">${htmlEscape(value)}</td>
+    </tr>`).join("");
+
+  const html = `
+    <div style="font-family:Arial,sans-serif;color:#172018;max-width:680px;margin:auto">
+      <h2 style="color:#1f5a37">${htmlEscape(heading)}</h2>
+      <table style="border-collapse:collapse;width:100%;background:#fff">${rows}</table>
+      <p style="margin-top:20px">
+        <a href="${SITE_URL}/admin" style="background:#1f5a37;color:#fff;text-decoration:none;padding:10px 16px;border-radius:8px;display:inline-block">
+          Open Admin Dashboard
+        </a>
+      </p>
+    </div>`;
+
+  const { data, error } = await resend.emails.send({
+    from: RESEND_FROM,
+    to: [NOTIFY_EMAIL],
+    subject,
+    html
+  });
+
+  if(error){
+    console.error("Email notification failed:", error);
+    return {sent:false, error};
+  }
+
+  console.log("Email notification sent:", data?.id || "sent");
+  return {sent:true, id:data?.id || null};
+}
+
 
 const SERVICE_ZIPS = {"30110":"Bremen","30117":"Carrollton","30179":"Temple","30180":"Villa Rica","30134":"Douglasville","30135":"Douglasville","30132":"Dallas","30125":"Cedartown","30263":"Newnan","30265":"Newnan"};
 const PRICE = {"Sell My House Fast":125,"Roofing":65,"HVAC":50,"Concrete":45,"Tree Removal":40,"Electrical":50,"Drywall Finishing":35,"Painting":35,"Plumbing":50};
@@ -53,7 +109,18 @@ app.post("/api/leads", async (req,res)=>{
     const {data,error}=await supabase.from("leads").insert(row).select("id,created_at").single();
     if(error) throw error;
     await supabase.from("lead_status_history").insert({lead_id:data.id,status:"new",notes:"Lead received from website."});
-    res.json({ok:true,lead_id:data.id});
+    const emailResult=await sendAdminNotification({
+      subject:`New Homeowner Lead: ${row.service} - ${row.city||row.zip_code}`,
+      heading:"New Homeowner Lead",
+      fields:[
+        ["Lead ID",data.id],["Service",row.service],["Project Type",row.project_type||""],
+        ["Customer",row.customer_name],["Phone",row.phone],["Email",row.email],
+        ["Address",row.address||""],["City / ZIP",`${row.city||""} ${row.zip_code}`.trim()],
+        ["Timeline",row.timeline||""],["Details",row.details||""],
+        ["Lead Value",`$${Number(row.lead_value||0).toFixed(2)}`]
+      ]
+    });
+    res.json({ok:true,lead_id:data.id,notification_sent:Boolean(emailResult.sent)});
   }catch(e){console.error(e);res.status(500).json({ok:false,error:"Unable to save lead."});}
 });
 
@@ -127,11 +194,31 @@ app.post("/api/partners", async (req,res)=>{
 
     console.log("Contractor application captured:", contractorId);
 
+    const emailResult = await sendAdminNotification({
+      subject: `New Contractor Application: ${baseRow.business_name} - ${baseRow.service}`,
+      heading: "New Founding Contractor Application",
+      fields: [
+        ["Application ID", contractorId],
+        ["Business", baseRow.business_name],
+        ["Contact", baseRow.contact_name],
+        ["Phone", baseRow.phone],
+        ["Email", baseRow.email],
+        ["Service", baseRow.service],
+        ["Service Area", optionalFields.service_area || ""],
+        ["License", optionalFields.license_number || ""],
+        ["Insured", optionalFields.insured ? "Yes" : "No"],
+        ["Max Leads / Week", optionalFields.max_leads_per_week],
+        ["Notes", optionalFields.notes || ""],
+        ["Status", "Pending"]
+      ]
+    });
+
     return res.json({
       ok:true,
       contractor_id:contractorId,
       created_at:inserted.data.created_at,
-      optional_fields_saved:!enriched.error
+      optional_fields_saved:!enriched.error,
+      notification_sent:Boolean(emailResult.sent)
     });
 
   }catch(e){
