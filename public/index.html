@@ -74,13 +74,48 @@ footer{background:#172018;color:#dce5dd;padding:28px 20px;text-align:center}.fin
 </section>
 
 <section id="partners" class="hide">
+  <div class="hero">
+    <div class="eyebrow">FOUNDING CONTRACTOR PROGRAM</div>
+    <h1>Be one of the first local pros in your service area.</h1>
+    <p>West Georgia Home Solutions is building a local homeowner referral network. We’re currently selecting founding contractors by trade and territory before we begin actively generating homeowner requests.</p>
+    <button class="btn primary" onclick="openPartnerForm('Founding Partner')">Reserve My Service Area</button>
+    <div class="trust"><span>✓ First 3 qualified leads free</span><span>✓ No contract</span><span>✓ Choose your territory</span></div>
+  </div>
+
   <div class="section">
-    <div class="eyebrow">CONTRACTOR PARTNERS</div><h2>Choose how you want to buy leads</h2>
+    <div class="eyebrow">WHY JOIN EARLY?</div>
+    <h2>Founding Partner Benefits</h2>
     <div class="price-grid">
-      <div class="card price"><h3>Pay Per Lead</h3><div class="amount">$40–$125</div><div class="muted">per qualified lead</div><ul><li>No long-term contract</li><li>Choose service area</li><li>Good for proving ROI</li></ul><button class="btn primary" onclick="openPartnerForm('Pay Per Lead')">Apply</button></div>
-      <div class="card price popular"><div class="badge">RECOMMENDED</div><h3>Growth</h3><div class="amount">$499</div><div class="muted">per month</div><ul><li>Up to 12 qualified leads</li><li>Priority routing</li><li>Lead history dashboard</li></ul><button class="btn primary" onclick="openPartnerForm('Growth')">Apply</button></div>
-      <div class="card price"><h3>Exclusive</h3><div class="amount">$799+</div><div class="muted">per month</div><ul><li>Exclusive category/territory</li><li>First-right-of-refusal routing</li><li>Custom volume</li></ul><button class="btn primary" onclick="openPartnerForm('Exclusive')">Apply</button></div>
+      <div class="card price">
+        <h3>3 Free Leads</h3>
+        <div class="amount">$0</div>
+        <div class="muted">to prove the service first</div>
+        <ul><li>Your first 3 qualified leads are free</li><li>No setup fee</li><li>No long-term contract</li></ul>
+      </div>
+      <div class="card price popular">
+        <div class="badge">FOUNDING PARTNER</div>
+        <h3>Priority Territory</h3>
+        <div class="amount">Early Access</div>
+        <div class="muted">before public rollout</div>
+        <ul><li>Choose counties and ZIP codes</li><li>Priority routing while available</li><li>Opportunity for future exclusivity</li></ul>
+      </div>
+      <div class="card price">
+        <h3>Pay Only After Trial</h3>
+        <div class="amount">No Risk</div>
+        <div class="muted">during the founding trial</div>
+        <ul><li>Review lead quality first</li><li>Future pricing discussed after trial</li><li>No guaranteed lead volume promised</li></ul>
+      </div>
     </div>
+
+    <div class="card" style="margin-top:18px">
+      <h3 style="margin-top:0">What counts as a qualified lead?</h3>
+      <p class="muted">A homeowner who requests your service, provides valid contact information, and is located within the service area you selected. We are not promising that every lead becomes a job.</p>
+    </div>
+
+    <div style="text-align:center;margin-top:28px">
+      <button class="btn primary" onclick="openPartnerForm('Founding Partner')">Apply as a Founding Contractor</button>
+    </div>
+
     <div id="partnerBox" class="panel hide"></div>
   </div>
 </section>
@@ -95,13 +130,14 @@ footer{background:#172018;color:#dce5dd;padding:28px 20px;text-align:center}.fin
       <div class="stat"><span>Partner Requests</span><strong id="sPartners">0</strong></div>
       <div class="stat"><span>Unmatched Leads</span><strong id="sUnmatched">0</strong></div>
     </div>
-    <div class="tablewrap"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><h2>Recent Leads</h2><button class="btn secondary" onclick="clearData()">Clear Demo Data</button></div><div id="leadTable"></div></div>
+    <div class="tablewrap"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><h2>Recent Leads</h2><button class="btn secondary" onclick="clearData()">Data Controls</button></div><div id="leadTable"></div></div>
+    <div class="tablewrap"><h2>Founding Contractor Applications</h2><div id="partnerTable"></div></div>
   </div>
 </section>
 
 <footer>
   <strong>West Georgia Home Solutions</strong><br>
-  <span class="fine">Prototype matching service. Live launch should include privacy policy, terms, provider disclosures, consent language and secure data handling.</span>
+  <span class="fine">Local homeowner matching service in launch phase. Contractor applications are reviewed before activation.</span>
 </footer>
 
 <script>
@@ -167,7 +203,48 @@ async function submitLead(e){
     if(btn){btn.disabled=false;btn.textContent="Submit Request";}
   }
 }
-function openPartnerForm(plan){const b=document.getElementById("partnerBox");b.classList.remove("hide");b.innerHTML=`<div class="eyebrow">${plan.toUpperCase()}</div><h2>Partner application</h2><form class="stack" onsubmit="savePartner(event,${JSON.stringify(plan)})"><label>Business name<input name="business" required></label><label>Contact name<input name="name" required></label><label>Phone<input name="phone" required></label><label>Email<input type="email" name="email" required></label><label>Service<select name="service" required><option>Roofing</option><option>HVAC</option><option>Concrete</option><option>Tree Removal</option><option>Electrical</option><option>Drywall Finishing</option><option>Painting</option><option>Plumbing</option><option>Real Estate Investor</option></select></label><label>Counties / ZIP codes<textarea name="area" required placeholder="Example: Carroll, Haralson / 30110, 30117"></textarea></label><button class="btn primary">Submit Partner Request</button></form>`;b.scrollIntoView({behavior:"smooth"})}
+function openPartnerForm(plan){
+  const b=document.getElementById("partnerBox");
+  b.classList.remove("hide");
+  b.innerHTML=`
+    <div class="eyebrow">FOUNDING CONTRACTOR APPLICATION</div>
+    <h2>Reserve your service area</h2>
+    <p class="muted">There is no charge to apply. Founding partners receive their first 3 qualified leads free while we prove the program.</p>
+    <form class="stack" onsubmit="savePartner(event,${JSON.stringify(plan)})">
+      <label>Business name<input name="business" required></label>
+      <label>Contact name<input name="name" required></label>
+      <label>Phone<input name="phone" required inputmode="tel"></label>
+      <label>Email<input type="email" name="email" required></label>
+      <label>Primary service
+        <select name="service" required>
+          <option value="">Choose service</option>
+          <option>Roofing</option><option>HVAC</option><option>Concrete</option>
+          <option>Tree Removal</option><option>Electrical</option>
+          <option>Drywall Finishing</option><option>Painting</option>
+          <option>Plumbing</option><option>Real Estate Investor</option>
+        </select>
+      </label>
+      <label>Counties / ZIP codes you want to cover
+        <textarea name="area" required placeholder="Example: Carroll, Haralson / 30110, 30117"></textarea>
+      </label>
+      <label>License number, if applicable<input name="license_number" placeholder="Optional"></label>
+      <label>Are you insured?
+        <select name="insured" required><option value="">Choose</option><option value="true">Yes</option><option value="false">No</option></select>
+      </label>
+      <label>Maximum leads you would like per week
+        <select name="max_leads_per_week" required>
+          <option value="3">Up to 3</option><option value="5">Up to 5</option>
+          <option value="10">Up to 10</option><option value="20">10+</option>
+        </select>
+      </label>
+      <label>Anything else we should know?
+        <textarea name="notes" placeholder="Services you prefer, areas you do not cover, minimum job size, etc."></textarea>
+      </label>
+      <button class="btn primary" type="submit">Reserve My Service Area</button>
+      <div class="fine">Submitting an application does not guarantee exclusivity or lead volume. Applications are reviewed before activation.</div>
+    </form>`;
+  b.scrollIntoView({behavior:"smooth"});
+}
 async function savePartner(e,plan){
   e.preventDefault();
   let d=Object.fromEntries(new FormData(e.target).entries());
@@ -212,6 +289,7 @@ function renderAdmin(){
     document.getElementById("sPartners").textContent=p.length;
     document.getElementById("sUnmatched").textContent=l.filter(x=>x.status==="unmatched").length;
     document.getElementById("leadTable").innerHTML=l.length?`<table><thead><tr><th>Date</th><th>Service</th><th>Name</th><th>City/ZIP</th><th>Project</th><th>Status</th><th>Value</th></tr></thead><tbody>${l.map(x=>`<tr><td>${new Date(x.created_at).toLocaleDateString()}</td><td>${esc(x.service)}</td><td>${esc(x.customer_name)}</td><td>${esc(x.city||"")} ${esc(x.zip_code)}</td><td>${esc(x.project_type||"")}</td><td class="route">${esc(x.status)}</td><td>$${x.lead_value||0}</td></tr>`).join("")}</tbody></table>`:`<p class="muted">No live leads yet.</p>`;
+    document.getElementById("partnerTable").innerHTML=p.length?`<table><thead><tr><th>Date</th><th>Business</th><th>Contact</th><th>Service</th><th>Area</th><th>Insured</th><th>Lead Cap</th><th>Status</th></tr></thead><tbody>${p.map(x=>`<tr><td>${new Date(x.created_at).toLocaleDateString()}</td><td>${esc(x.business_name)}</td><td>${esc(x.contact_name)}</td><td>${esc(x.service)}</td><td>${esc(x.service_area||"")}</td><td>${x.insured===true?"Yes":x.insured===false?"No":""}</td><td>${esc(x.max_leads_per_week||"")}</td><td>${x.active?"Active":"Pending"}</td></tr>`).join("")}</tbody></table>`:`<p class="muted">No founding contractor applications yet.</p>`;
   }).catch(err=>{
     console.error(err);
     alert("Unable to load admin data.");

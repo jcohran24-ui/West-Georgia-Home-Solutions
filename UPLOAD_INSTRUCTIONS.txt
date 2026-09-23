@@ -1,0 +1,24 @@
+FOUNDING CONTRACTOR PROGRAM UPDATE
+
+STEP 1 — SUPABASE
+Open SQL Editor and run:
+supabase/FOUNDING_PARTNER_MIGRATION.sql
+
+STEP 2 — GITHUB
+Replace:
+- public/index.html
+- server/server.js
+
+STEP 3 — RENDER
+Let Auto Deploy run, or choose Manual Deploy -> Deploy latest commit.
+
+WHAT CHANGED
+- Contractor pricing page replaced by Founding Contractor Program
+- First 3 qualified leads free
+- No contract / no setup fee messaging
+- Reserve My Service Area call-to-action
+- Captures service area, license number, insurance status, weekly lead cap and notes
+- New applications save as pending founding partners
+- Admin dashboard shows contractor applications
+
+Your existing Render environment variables stay the same.

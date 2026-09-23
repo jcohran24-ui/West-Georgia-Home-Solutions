@@ -40,7 +40,23 @@ app.post("/api/partners", async (req,res)=>{
   try{
     const b=req.body||{};
     for(const k of ["business","name","phone","email","service"]) if(!String(b[k]||"").trim()) return res.status(400).json({ok:false,error:`Missing ${k}`});
-    const row={business_name:b.business.trim(),contact_name:b.name.trim(),phone:b.phone.trim(),email:b.email.trim(),service:b.service.trim(),plan_type:String(b.plan||"Pay Per Lead"),active:false,exclusive:String(b.plan||"").toLowerCase().includes("exclusive")};
+    const row={
+      business_name:b.business.trim(),
+      contact_name:b.name.trim(),
+      phone:b.phone.trim(),
+      email:b.email.trim(),
+      service:b.service.trim(),
+      plan_type:"Founding Partner",
+      active:false,
+      exclusive:false,
+      service_area:String(b.area||"").trim()||null,
+      license_number:String(b.license_number||"").trim()||null,
+      insured:String(b.insured||"")==="true",
+      max_leads_per_week:Number(b.max_leads_per_week||3),
+      notes:String(b.notes||"").trim()||null,
+      founding_partner:true,
+      free_leads_remaining:3
+    };
     const {data,error}=await supabase.from("contractors").insert(row).select("id").single();
     if(error) throw error;
     res.json({ok:true,contractor_id:data.id});
