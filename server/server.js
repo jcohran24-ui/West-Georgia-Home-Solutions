@@ -5,7 +5,15 @@ const { createClient } = require("@supabase/supabase-js");
 const app = express();
 app.use(express.json({ limit: "1mb" }));
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "..", "public")));
+app.use(express.static(path.join(__dirname, "..", "public"), {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith(".html")) {
+      res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+      res.setHeader("Pragma", "no-cache");
+      res.setHeader("Expires", "0");
+    }
+  }
+}));
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, {
   auth: { persistSession: false, autoRefreshToken: false }
@@ -21,6 +29,8 @@ app.get("/admin", (req,res) => {
 });
 
 app.get("/health",(req,res)=>res.json({ok:true,supabaseConfigured:Boolean(process.env.SUPABASE_URL&&process.env.SUPABASE_SECRET_KEY)}));
+
+app.get("/version",(req,res)=>res.json({ok:true,build:"WGHS-2026-09-23-MASTER-1"}));
 
 app.post("/api/leads", async (req,res)=>{
   try{
@@ -39,6 +49,10 @@ app.post("/api/leads", async (req,res)=>{
     await supabase.from("lead_status_history").insert({lead_id:data.id,status:"new",notes:"Lead received from website."});
     res.json({ok:true,lead_id:data.id});
   }catch(e){console.error(e);res.status(500).json({ok:false,error:"Unable to save lead."});}
+});
+
+app.get("/api/partners",(req,res)=>{
+  res.status(405).send("Contractor applications must be submitted by POST. Please return to the website and refresh.");
 });
 
 app.post("/api/partners", async (req,res)=>{

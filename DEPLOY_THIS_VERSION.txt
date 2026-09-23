@@ -1,0 +1,47 @@
+WEST GEORGIA HOME SOLUTIONS — MASTER CURRENT DEPLOYMENT
+Build: WGHS-2026-09-23-MASTER-1
+
+This package consolidates the current fixes so old and new files cannot get mixed.
+
+UPLOAD/REPLACE IN GITHUB:
+1. public/index.html
+2. public/admin.html
+3. server/server.js
+4. package.json only if your current package.json does not already include @supabase/supabase-js
+
+THEN:
+Render -> Manual Deploy -> Clear build cache & deploy
+
+VERIFY AFTER RENDER IS LIVE:
+
+1. Open:
+https://west-georgia-home-solutions.onrender.com/version
+
+It MUST display:
+{"ok":true,"build":"WGHS-2026-09-23-MASTER-1"}
+
+2. Open the public homepage.
+At the very bottom it should say:
+Site build: WGHS-2026-09-23-MASTER-1
+
+3. The PUBLIC header must show only:
+Home
+For Contractors
+There should be NO Admin Demo button.
+
+4. Submit a contractor application.
+The URL must stay clean.
+It should NOT contain:
+?business=
+&name=
+&phone=
+&email=
+
+5. A successful submission should display the Application Submitted popup
+with an Application Reference ID.
+
+6. Private admin remains:
+https://west-georgia-home-solutions.onrender.com/admin
+
+SECURITY:
+If a previous test put real personal data in the URL, remove that history entry.
