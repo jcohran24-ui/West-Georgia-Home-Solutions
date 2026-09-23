@@ -145,6 +145,85 @@ app.get("/api/admin/contractor-count",admin,async(req,res)=>{
   }
 });
 
+
+app.patch("/api/admin/leads/:id",admin,async(req,res)=>{
+  try{
+    const id=String(req.params.id||"").trim();
+    if(!id) return res.status(400).json({ok:false,error:"Missing lead id"});
+
+    const b=req.body||{};
+    const allowed=[
+      "service","project_type","timeline","zip_code","city","address",
+      "details","customer_name","phone","email","lead_value","status"
+    ];
+    const updates={};
+
+    for(const key of allowed){
+      if(Object.prototype.hasOwnProperty.call(b,key)){
+        updates[key]=b[key];
+      }
+    }
+
+    if(!Object.keys(updates).length){
+      return res.status(400).json({ok:false,error:"No editable fields supplied"});
+    }
+
+    if(Object.prototype.hasOwnProperty.call(updates,"lead_value")){
+      updates.lead_value=Number(updates.lead_value||0);
+      if(Number.isNaN(updates.lead_value)){
+        return res.status(400).json({ok:false,error:"Lead value must be a number"});
+      }
+    }
+
+    const {data,error}=await supabase
+      .from("leads")
+      .update(updates)
+      .eq("id",id)
+      .select("*")
+      .single();
+
+    if(error){
+      console.error("Lead update failed:",error);
+      return res.status(500).json({ok:false,error:error.message});
+    }
+
+    await supabase.from("lead_status_history").insert({
+      lead_id:id,
+      status:String(data.status||"updated"),
+      notes:"Lead edited from admin dashboard."
+    });
+
+    return res.json({ok:true,lead:data});
+  }catch(e){
+    console.error("Lead edit endpoint exception:",e);
+    return res.status(500).json({ok:false,error:e.message});
+  }
+});
+
+app.delete("/api/admin/leads/:id",admin,async(req,res)=>{
+  try{
+    const id=String(req.params.id||"").trim();
+    if(!id) return res.status(400).json({ok:false,error:"Missing lead id"});
+
+    const {data,error}=await supabase
+      .from("leads")
+      .delete()
+      .eq("id",id)
+      .select("id")
+      .single();
+
+    if(error){
+      console.error("Lead delete failed:",error);
+      return res.status(500).json({ok:false,error:error.message});
+    }
+
+    return res.json({ok:true,deleted_id:data.id});
+  }catch(e){
+    console.error("Lead delete endpoint exception:",e);
+    return res.status(500).json({ok:false,error:e.message});
+  }
+});
+
 app.get("/api/admin/partners",admin,async(req,res)=>{
   try{
     const {data,error,count}=await supabase
