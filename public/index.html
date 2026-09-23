@@ -243,13 +243,14 @@ async function savePartner(e,plan){
     });
     const j=await r.json();
     if(!r.ok||!j.ok) throw new Error(j.error||"Unable to save application");
-    alert("Partner application received.");
+    alert("Application received. Reference: "+j.contractor_id);
+    e.target.reset();
     show("home");
   }catch(err){
     console.error("Partner application failed:",err);
-    alert("We could not save your application. Please try again.");
+    alert("We could not save your application: "+err.message);
   }finally{
-    if(btn){btn.disabled=false;btn.textContent="Submit Partner Request";}
+    if(btn){btn.disabled=false;btn.textContent="Reserve My Service Area";}
   }
 }
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}

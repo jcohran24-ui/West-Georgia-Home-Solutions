@@ -44,16 +44,25 @@ app.post("/api/leads", async (req,res)=>{
 app.post("/api/partners", async (req,res)=>{
   try{
     const b=req.body||{};
-    for(const k of ["business","name","phone","email","service"]) if(!String(b[k]||"").trim()) return res.status(400).json({ok:false,error:`Missing ${k}`});
-    const row={
-      business_name:b.business.trim(),
-      contact_name:b.name.trim(),
-      phone:b.phone.trim(),
-      email:b.email.trim(),
-      service:b.service.trim(),
+    for(const k of ["business","name","phone","email","service"]){
+      if(!String(b[k]||"").trim()){
+        return res.status(400).json({ok:false,error:`Missing ${k}`});
+      }
+    }
+
+    const baseRow={
+      business_name:String(b.business).trim(),
+      contact_name:String(b.name).trim(),
+      phone:String(b.phone).trim(),
+      email:String(b.email).trim(),
+      service:String(b.service).trim(),
       plan_type:"Founding Partner",
       active:false,
-      exclusive:false,
+      exclusive:false
+    };
+
+    const fullRow={
+      ...baseRow,
       service_area:String(b.area||"").trim()||null,
       license_number:String(b.license_number||"").trim()||null,
       insured:String(b.insured||"")==="true",
@@ -62,10 +71,30 @@ app.post("/api/partners", async (req,res)=>{
       founding_partner:true,
       free_leads_remaining:3
     };
-    const {data,error}=await supabase.from("contractors").insert(row).select("id").single();
-    if(error) throw error;
-    res.json({ok:true,contractor_id:data.id});
-  }catch(e){console.error(e);res.status(500).json({ok:false,error:"Unable to save partner application."});}
+
+    let result=await supabase.from("contractors").insert(fullRow).select("id,created_at").single();
+
+    // If optional columns were not migrated yet, keep the application instead of losing it.
+    if(result.error && (result.error.code==="PGRST204" || /column/i.test(result.error.message||""))){
+      console.warn("Retrying contractor insert with base columns:", result.error.message);
+      result=await supabase.from("contractors").insert(baseRow).select("id,created_at").single();
+    }
+
+    if(result.error){
+      console.error("Contractor insert error:", result.error);
+      return res.status(500).json({
+        ok:false,
+        error:`Database rejected application: ${result.error.message}`,
+        code:result.error.code||null
+      });
+    }
+
+    console.log("Contractor application saved:", result.data.id);
+    return res.json({ok:true,contractor_id:result.data.id,created_at:result.data.created_at});
+  }catch(e){
+    console.error("Partner endpoint error:",e);
+    return res.status(500).json({ok:false,error:`Server error: ${e.message}`});
+  }
 });
 
 function admin(req,res,next){
@@ -78,6 +107,16 @@ app.get("/api/admin/leads",admin,async(req,res)=>{
   const {data,error}=await supabase.from("leads").select("*").order("created_at",{ascending:false}).limit(200);
   if(error) return res.status(500).json({ok:false,error:error.message});
   res.json({ok:true,leads:data||[]});
+});
+
+app.get("/api/admin/contractor-count",admin,async(req,res)=>{
+  try{
+    const {count,error}=await supabase.from("contractors").select("*",{count:"exact",head:true});
+    if(error) throw error;
+    res.json({ok:true,count:count||0});
+  }catch(e){
+    res.status(500).json({ok:false,error:e.message});
+  }
 });
 
 app.get("/api/admin/partners",admin,async(req,res)=>{
