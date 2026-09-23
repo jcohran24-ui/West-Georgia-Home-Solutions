@@ -40,7 +40,18 @@ footer{background:#172018;color:#dce5dd;padding:28px 20px;text-align:center}.fin
 
 </style>
 <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-1050554266"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-1050554266">
+function reportContractorConversion(){
+  if(typeof gtag === "function"){
+    gtag('event', 'conversion', {
+      'send_to': 'AW-1050554266/5oiaCOLv7IIdEJrf-PQD',
+      'value': 1.0,
+      'currency': 'USD'
+    });
+  }
+}
+
+</script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -288,6 +299,7 @@ async function savePartner(e,plan){
     const j=await r.json();
     if(!r.ok||!j.ok) throw new Error(j.error||"Unable to save application");
     e.target.reset();
+    reportContractorConversion();
     document.getElementById("contractorSuccessRef").textContent=j.contractor_id||"Submitted";
     document.getElementById("contractorSuccessModal").classList.remove("hide");
   }catch(err){
