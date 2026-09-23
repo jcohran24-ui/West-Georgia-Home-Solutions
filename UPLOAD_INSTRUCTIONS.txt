@@ -1,13 +1,33 @@
-CONTRACTOR SUCCESS POPUP UPDATE
+CRITICAL CONTRACTOR FORM FIX
 
-Upload/replace in GitHub:
-- public/index.html
+CAUSE
+The previous contractor form generated an invalid inline onsubmit attribute around
+"Founding Partner". The browser therefore performed a normal GET submission.
+That caused contractor information to appear in the URL and prevented the
+application from reaching /api/partners.
 
-No database or Render environment changes are required.
+FIX
+- Removed the inline onsubmit handler.
+- Added a proper JavaScript submit event listener.
+- Added method="post" action="/api/partners" as a safe fallback.
+- Contractor details no longer belong in the URL.
+- Existing success popup and Application Reference ID remain.
 
-After Render redeploys:
-1. Submit a contractor application.
-2. A large confirmation popup will appear.
-3. It confirms the information was received.
-4. It displays the contractor Application Reference ID.
-5. Tapping Done returns the user to the homepage.
+UPLOAD TO GITHUB
+Replace only:
+public/index.html
+
+Then let Render redeploy.
+
+TEST
+1. Open the site in a fresh/private browser tab after deployment.
+2. Open For Contractors.
+3. Submit a new test application.
+4. The URL should NOT change to include business/name/phone/email.
+5. You should see the Application Submitted popup with a Reference ID.
+6. Open /admin and click Refresh.
+7. The contractor application should appear.
+
+PRIVACY NOTE
+Because earlier test submissions placed data in the URL, clear that test URL from
+browser history if it contained real personal information.
