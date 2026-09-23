@@ -44,12 +44,15 @@ app.post("/api/leads", async (req,res)=>{
 app.post("/api/partners", async (req,res)=>{
   try{
     const b=req.body||{};
+
     for(const k of ["business","name","phone","email","service"]){
       if(!String(b[k]||"").trim()){
         return res.status(400).json({ok:false,error:`Missing ${k}`});
       }
     }
 
+    // STEP 1: Always capture the application using only the original,
+    // guaranteed columns in the contractors table.
     const baseRow={
       business_name:String(b.business).trim(),
       contact_name:String(b.name).trim(),
@@ -61,8 +64,26 @@ app.post("/api/partners", async (req,res)=>{
       exclusive:false
     };
 
-    const fullRow={
-      ...baseRow,
+    const inserted=await supabase
+      .from("contractors")
+      .insert(baseRow)
+      .select("id,created_at")
+      .single();
+
+    if(inserted.error){
+      console.error("BASE contractor insert failed:", inserted.error);
+      return res.status(500).json({
+        ok:false,
+        error:`Contractor application was not saved: ${inserted.error.message}`,
+        code:inserted.error.code||null
+      });
+    }
+
+    const contractorId=inserted.data.id;
+
+    // STEP 2: Enrich the captured application with optional founding-partner
+    // fields. Failure here does NOT lose the application.
+    const optionalFields={
       service_area:String(b.area||"").trim()||null,
       license_number:String(b.license_number||"").trim()||null,
       insured:String(b.insured||"")==="true",
@@ -72,28 +93,33 @@ app.post("/api/partners", async (req,res)=>{
       free_leads_remaining:3
     };
 
-    let result=await supabase.from("contractors").insert(fullRow).select("id,created_at").single();
+    const enriched=await supabase
+      .from("contractors")
+      .update(optionalFields)
+      .eq("id",contractorId);
 
-    // If optional columns were not migrated yet, keep the application instead of losing it.
-    if(result.error && (result.error.code==="PGRST204" || /column/i.test(result.error.message||""))){
-      console.warn("Retrying contractor insert with base columns:", result.error.message);
-      result=await supabase.from("contractors").insert(baseRow).select("id,created_at").single();
+    if(enriched.error){
+      console.warn(
+        "Contractor captured, but optional fields could not be saved:",
+        enriched.error.message
+      );
     }
 
-    if(result.error){
-      console.error("Contractor insert error:", result.error);
-      return res.status(500).json({
-        ok:false,
-        error:`Database rejected application: ${result.error.message}`,
-        code:result.error.code||null
-      });
-    }
+    console.log("Contractor application captured:", contractorId);
 
-    console.log("Contractor application saved:", result.data.id);
-    return res.json({ok:true,contractor_id:result.data.id,created_at:result.data.created_at});
+    return res.json({
+      ok:true,
+      contractor_id:contractorId,
+      created_at:inserted.data.created_at,
+      optional_fields_saved:!enriched.error
+    });
+
   }catch(e){
-    console.error("Partner endpoint error:",e);
-    return res.status(500).json({ok:false,error:`Server error: ${e.message}`});
+    console.error("Partner endpoint exception:",e);
+    return res.status(500).json({
+      ok:false,
+      error:`Server error while saving contractor: ${e.message}`
+    });
   }
 });
 
@@ -120,9 +146,27 @@ app.get("/api/admin/contractor-count",admin,async(req,res)=>{
 });
 
 app.get("/api/admin/partners",admin,async(req,res)=>{
-  const {data,error}=await supabase.from("contractors").select("*").order("created_at",{ascending:false}).limit(200);
-  if(error) return res.status(500).json({ok:false,error:error.message});
-  res.json({ok:true,partners:data||[]});
+  try{
+    const {data,error,count}=await supabase
+      .from("contractors")
+      .select("*",{count:"exact"})
+      .order("created_at",{ascending:false})
+      .limit(200);
+
+    if(error){
+      console.error("Admin contractor read failed:",error);
+      return res.status(500).json({ok:false,error:error.message});
+    }
+
+    return res.json({
+      ok:true,
+      count:count||0,
+      partners:data||[]
+    });
+  }catch(e){
+    console.error("Admin contractor endpoint exception:",e);
+    return res.status(500).json({ok:false,error:e.message});
+  }
 });
 
 app.listen(process.env.PORT||3000,()=>console.log("WGHS server running"));

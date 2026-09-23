@@ -20,6 +20,24 @@ nav{display:flex;gap:8px;flex-wrap:wrap}.btn{border:none;border-radius:12px;padd
 footer{background:#172018;color:#dce5dd;padding:28px 20px;text-align:center}.fine{font-size:12px;line-height:1.5;color:#7a837c}
 @media(max-width:900px){.grid{grid-template-columns:1fr 1fr}.city-grid{grid-template-columns:1fr 1fr}.price-grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){header{padding:10px 12px}.brandtext strong{font-size:14px}.brandtext span{font-size:11px}nav .btn{padding:9px 10px;font-size:12px}.grid,.choice-grid{grid-template-columns:1fr}.service{min-height:120px}.panel{margin:18px 14px 55px;padding:20px}.panel h1{font-size:34px}.stats{grid-template-columns:1fr 1fr}.hero{padding-top:46px}}
+
+.success-modal-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.48);display:flex;align-items:center;
+  justify-content:center;padding:20px;z-index:9999
+}
+.success-modal{
+  width:min(520px,100%);background:#fff;border-radius:22px;padding:30px 24px;text-align:center;
+  box-shadow:0 24px 80px rgba(0,0,0,.22)
+}
+.success-check{
+  width:74px;height:74px;border-radius:50%;margin:0 auto 18px;background:#e8f4eb;
+  color:#1f5a37;display:grid;place-items:center;font-size:38px;font-weight:800
+}
+.success-modal h2{font-size:30px;margin:0 0 10px}
+.success-modal p{color:#657067;line-height:1.55;margin:8px 0}
+.success-ref{margin:18px 0;padding:12px;background:#f6f8f5;border-radius:12px;font-size:13px;word-break:break-all}
+.success-modal .btn{margin-top:8px;min-width:180px}
+
 </style>
 </head>
 <body>
@@ -118,6 +136,18 @@ footer{background:#172018;color:#dce5dd;padding:28px 20px;text-align:center}.fin
     <div id="partnerBox" class="panel hide"></div>
   </div>
 </section>
+
+
+<div id="contractorSuccessModal" class="success-modal-backdrop hide" role="dialog" aria-modal="true" aria-labelledby="contractorSuccessTitle">
+  <div class="success-modal">
+    <div class="success-check">✓</div>
+    <h2 id="contractorSuccessTitle">Application Submitted</h2>
+    <p>Thank you for applying to become a founding contractor with West Georgia Home Solutions.</p>
+    <p>We received your information and will review your trade and requested service area before activation.</p>
+    <div class="success-ref"><strong>Application Reference:</strong><br><span id="contractorSuccessRef"></span></div>
+    <button class="btn primary" onclick="closeContractorSuccess()">Done</button>
+  </div>
+</div>
 
 <footer>
   <strong>West Georgia Home Solutions</strong><br>
@@ -243,9 +273,9 @@ async function savePartner(e,plan){
     });
     const j=await r.json();
     if(!r.ok||!j.ok) throw new Error(j.error||"Unable to save application");
-    alert("Application received. Reference: "+j.contractor_id);
     e.target.reset();
-    show("home");
+    document.getElementById("contractorSuccessRef").textContent=j.contractor_id||"Submitted";
+    document.getElementById("contractorSuccessModal").classList.remove("hide");
   }catch(err){
     console.error("Partner application failed:",err);
     alert("We could not save your application: "+err.message);
@@ -254,6 +284,12 @@ async function savePartner(e,plan){
   }
 }
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+
+function closeContractorSuccess(){
+  document.getElementById("contractorSuccessModal").classList.add("hide");
+  show("home");
+}
+
 </script>
 </body>
 </html>

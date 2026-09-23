@@ -45,7 +45,7 @@ table{width:100%;border-collapse:collapse;min-width:800px}th,td{text-align:left;
 <section id="dashboard" class="admin hide">
   <div class="top">
     <div><div class="eyebrow">ADMIN DASHBOARD</div><h1>Lead & Contractor Management</h1></div>
-    <button class="btn secondary" onclick="logout()">Sign Out</button>
+    <div style="display:flex;gap:8px"><button class="btn secondary" onclick="loadDashboard(sessionStorage.getItem('wghs_admin_key'))">Refresh</button><button class="btn secondary" onclick="logout()">Sign Out</button></div>
   </div>
   <div class="stats">
     <div class="stat"><span>Total Leads</span><strong id="sTotal">0</strong></div>
@@ -99,13 +99,25 @@ async function loadDashboard(key){
     ]);
     if(lr.status===401||pr.status===401){logout();return;}
     const lj=await lr.json(), pj=await pr.json();
-    const l=lj.leads||[], p=pj.partners||[];
+
+    if(!lr.ok || !lj.ok){
+      throw new Error("Lead API: "+(lj.error||lr.statusText));
+    }
+    if(!pr.ok || !pj.ok){
+      document.getElementById("partnerTable").innerHTML=
+        `<p class="error">Contractor applications could not be loaded: ${esc(pj.error||pr.statusText)}</p>`;
+      document.getElementById("sPartners").textContent="ERR";
+    }
+
+    const l=lj.leads||[], p=(pr.ok&&pj.ok)?(pj.partners||[]):[];
     document.getElementById("sTotal").textContent=l.length;
     document.getElementById("sRevenue").textContent="$"+l.reduce((a,x)=>a+(+x.lead_value||0),0).toLocaleString();
     document.getElementById("sPartners").textContent=p.length;
     document.getElementById("sUnmatched").textContent=l.filter(x=>x.status==="unmatched").length;
     document.getElementById("leadTable").innerHTML=l.length?`<table><thead><tr><th>Date</th><th>Service</th><th>Name</th><th>Phone</th><th>Email</th><th>City/ZIP</th><th>Project</th><th>Status</th></tr></thead><tbody>${l.map(x=>`<tr><td>${new Date(x.created_at).toLocaleString()}</td><td>${esc(x.service)}</td><td>${esc(x.customer_name)}</td><td>${esc(x.phone)}</td><td>${esc(x.email)}</td><td>${esc(x.city||"")} ${esc(x.zip_code)}</td><td>${esc(x.project_type||"")}</td><td>${esc(x.status)}</td></tr>`).join("")}</tbody></table>`:`<p class="muted">No homeowner leads yet.</p>`;
-    document.getElementById("partnerTable").innerHTML=p.length?`<table><thead><tr><th>Date</th><th>Business</th><th>Contact</th><th>Phone</th><th>Email</th><th>Service</th><th>Area</th><th>Status</th></tr></thead><tbody>${p.map(x=>`<tr><td>${new Date(x.created_at).toLocaleString()}</td><td>${esc(x.business_name)}</td><td>${esc(x.contact_name)}</td><td>${esc(x.phone)}</td><td>${esc(x.email)}</td><td>${esc(x.service)}</td><td>${esc(x.service_area||"")}</td><td>${x.active?"Active":"Pending"}</td></tr>`).join("")}</tbody></table>`:`<p class="muted">No contractor applications yet.</p>`;
+    if(pr.ok && pj.ok){
+      document.getElementById("partnerTable").innerHTML=p.length?`<table><thead><tr><th>Date</th><th>Business</th><th>Contact</th><th>Phone</th><th>Email</th><th>Service</th><th>Area</th><th>Status</th></tr></thead><tbody>${p.map(x=>`<tr><td>${new Date(x.created_at).toLocaleString()}</td><td>${esc(x.business_name)}</td><td>${esc(x.contact_name)}</td><td>${esc(x.phone)}</td><td>${esc(x.email)}</td><td>${esc(x.service)}</td><td>${esc(x.service_area||"")}</td><td>${x.active?"Active":"Pending"}</td></tr>`).join("")}</tbody></table>`:`<p class="muted">No contractor applications yet.</p>`;
+    }
   }catch(e){
     alert("Unable to load admin data.");
   }

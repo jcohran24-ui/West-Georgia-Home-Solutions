@@ -1,22 +1,13 @@
-CONTRACTOR APPLICATION CAPTURE FIX
+CONTRACTOR SUCCESS POPUP UPDATE
 
 Upload/replace in GitHub:
-1. public/index.html
-2. server/server.js
+- public/index.html
 
-No SQL changes are required for this fix.
+No database or Render environment changes are required.
 
-Then let Render redeploy.
-
-TEST:
-1. Open the public site.
-2. For Contractors -> Reserve My Service Area.
-3. Submit a test contractor.
-4. Successful submission now displays an Application Reference ID.
-5. Open /admin and sign in.
-6. The contractor should appear under Founding Contractor Applications.
-
-If it fails, the popup will now show the actual database error instead of only "Please try again".
-The Render logs will also say "Contractor application saved: <id>" on success.
-
-This version also automatically retries with the original contractor table columns if one of the newer optional fields was not migrated correctly.
+After Render redeploys:
+1. Submit a contractor application.
+2. A large confirmation popup will appear.
+3. It confirms the information was received.
+4. It displays the contractor Application Reference ID.
+5. Tapping Done returns the user to the homepage.
