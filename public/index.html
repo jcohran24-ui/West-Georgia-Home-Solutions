@@ -28,7 +28,6 @@ footer{background:#172018;color:#dce5dd;padding:28px 20px;text-align:center}.fin
   <nav>
     <button class="btn ghost" onclick="show('home')">Home</button>
     <button class="btn secondary" onclick="show('partners')">For Contractors</button>
-    <button class="btn primary" onclick="show('admin');renderAdmin()">Admin Demo</button>
   </nav>
 </header>
 
@@ -120,21 +119,6 @@ footer{background:#172018;color:#dce5dd;padding:28px 20px;text-align:center}.fin
   </div>
 </section>
 
-<section id="admin" class="hide">
-  <div class="admin">
-    <div class="eyebrow">ADMIN DEMO</div><h1>Lead Routing Dashboard</h1>
-    <p class="muted">Live database mode. Homeowner requests and contractor applications are stored securely through the website backend.</p>
-    <div class="stats">
-      <div class="stat"><span>Total Leads</span><strong id="sTotal">0</strong></div>
-      <div class="stat"><span>Demo Revenue</span><strong id="sRevenue">$0</strong></div>
-      <div class="stat"><span>Partner Requests</span><strong id="sPartners">0</strong></div>
-      <div class="stat"><span>Unmatched Leads</span><strong id="sUnmatched">0</strong></div>
-    </div>
-    <div class="tablewrap"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><h2>Recent Leads</h2><button class="btn secondary" onclick="clearData()">Data Controls</button></div><div id="leadTable"></div></div>
-    <div class="tablewrap"><h2>Founding Contractor Applications</h2><div id="partnerTable"></div></div>
-  </div>
-</section>
-
 <footer>
   <strong>West Georgia Home Solutions</strong><br>
   <span class="fine">Local homeowner matching service in launch phase. Contractor applications are reviewed before activation.</span>
@@ -166,7 +150,7 @@ const QUESTIONS = {
 };
 let lead={},step=0;
 
-function show(id){["home","lead","partners","admin"].forEach(x=>document.getElementById(x).classList.toggle("hide",x!==id));window.scrollTo(0,0)}
+function show(id){["home","lead","partners"].forEach(x=>{const el=document.getElementById(x);if(el)el.classList.toggle("hide",x!==id)});window.scrollTo(0,0)}
 function startLead(service){lead={service,created:new Date().toISOString()};step=0;show("lead");renderLead()}
 function renderLead(){
  document.getElementById("progress").style.width=((step+1)*20)+"%";
@@ -269,35 +253,6 @@ async function savePartner(e,plan){
   }
 }
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-function renderAdmin(){
-  const key=sessionStorage.getItem("wghs_admin_key") || prompt("Enter admin key:");
-  if(!key) return;
-  sessionStorage.setItem("wghs_admin_key",key);
-  Promise.all([
-    fetch("/api/admin/leads",{headers:{"x-admin-key":key}}),
-    fetch("/api/admin/partners",{headers:{"x-admin-key":key}})
-  ]).then(async ([lr,pr])=>{
-    if(lr.status===401 || pr.status===401){
-      sessionStorage.removeItem("wghs_admin_key");
-      alert("Incorrect admin key.");
-      return;
-    }
-    const lj=await lr.json(), pj=await pr.json();
-    const l=lj.leads||[], p=pj.partners||[];
-    document.getElementById("sTotal").textContent=l.length;
-    document.getElementById("sRevenue").textContent="$"+l.reduce((a,x)=>a+(+x.lead_value||0),0).toLocaleString();
-    document.getElementById("sPartners").textContent=p.length;
-    document.getElementById("sUnmatched").textContent=l.filter(x=>x.status==="unmatched").length;
-    document.getElementById("leadTable").innerHTML=l.length?`<table><thead><tr><th>Date</th><th>Service</th><th>Name</th><th>City/ZIP</th><th>Project</th><th>Status</th><th>Value</th></tr></thead><tbody>${l.map(x=>`<tr><td>${new Date(x.created_at).toLocaleDateString()}</td><td>${esc(x.service)}</td><td>${esc(x.customer_name)}</td><td>${esc(x.city||"")} ${esc(x.zip_code)}</td><td>${esc(x.project_type||"")}</td><td class="route">${esc(x.status)}</td><td>$${x.lead_value||0}</td></tr>`).join("")}</tbody></table>`:`<p class="muted">No live leads yet.</p>`;
-    document.getElementById("partnerTable").innerHTML=p.length?`<table><thead><tr><th>Date</th><th>Business</th><th>Contact</th><th>Service</th><th>Area</th><th>Insured</th><th>Lead Cap</th><th>Status</th></tr></thead><tbody>${p.map(x=>`<tr><td>${new Date(x.created_at).toLocaleDateString()}</td><td>${esc(x.business_name)}</td><td>${esc(x.contact_name)}</td><td>${esc(x.service)}</td><td>${esc(x.service_area||"")}</td><td>${x.insured===true?"Yes":x.insured===false?"No":""}</td><td>${esc(x.max_leads_per_week||"")}</td><td>${x.active?"Active":"Pending"}</td></tr>`).join("")}</tbody></table>`:`<p class="muted">No founding contractor applications yet.</p>`;
-  }).catch(err=>{
-    console.error(err);
-    alert("Unable to load admin data.");
-  });
-}
-function clearData(){
-  alert("Live leads are not deleted from this dashboard.");
-}
 </script>
 </body>
 </html>

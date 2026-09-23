@@ -15,6 +15,11 @@ const ADMIN_KEY = process.env.ADMIN_KEY || "";
 const SERVICE_ZIPS = {"30110":"Bremen","30117":"Carrollton","30179":"Temple","30180":"Villa Rica","30134":"Douglasville","30135":"Douglasville","30132":"Dallas","30125":"Cedartown","30263":"Newnan","30265":"Newnan"};
 const PRICE = {"Sell My House Fast":125,"Roofing":65,"HVAC":50,"Concrete":45,"Tree Removal":40,"Electrical":50,"Drywall Finishing":35,"Painting":35,"Plumbing":50};
 
+
+app.get("/admin", (req,res) => {
+  res.sendFile(path.join(__dirname, "..", "public", "admin.html"));
+});
+
 app.get("/health",(req,res)=>res.json({ok:true,supabaseConfigured:Boolean(process.env.SUPABASE_URL&&process.env.SUPABASE_SECRET_KEY)}));
 
 app.post("/api/leads", async (req,res)=>{

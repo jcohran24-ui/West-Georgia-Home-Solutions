@@ -1,24 +1,26 @@
-FOUNDING CONTRACTOR PROGRAM UPDATE
+SEPARATE PRIVATE ADMIN UPDATE
 
-STEP 1 — SUPABASE
-Open SQL Editor and run:
-supabase/FOUNDING_PARTNER_MIGRATION.sql
+WHAT THIS FIXES
+- Removes Admin access/button from the public website.
+- Removes the admin dashboard markup from the public homepage.
+- Creates a separate private admin page.
+- A blank password cannot reveal the dashboard.
+- The dashboard appears only after the backend accepts ADMIN_KEY.
+- Admin API calls are still protected by the Render ADMIN_KEY.
 
-STEP 2 — GITHUB
-Replace:
-- public/index.html
-- server/server.js
+UPLOAD TO GITHUB
+1. Replace public/index.html
+2. Add public/admin.html
+3. Replace server/server.js
 
-STEP 3 — RENDER
-Let Auto Deploy run, or choose Manual Deploy -> Deploy latest commit.
+THEN
+- Let Render auto-deploy, or Manual Deploy -> Deploy latest commit.
 
-WHAT CHANGED
-- Contractor pricing page replaced by Founding Contractor Program
-- First 3 qualified leads free
-- No contract / no setup fee messaging
-- Reserve My Service Area call-to-action
-- Captures service area, license number, insurance status, weekly lead cap and notes
-- New applications save as pending founding partners
-- Admin dashboard shows contractor applications
+PUBLIC SITE
+https://west-georgia-home-solutions.onrender.com/
 
-Your existing Render environment variables stay the same.
+PRIVATE ADMIN
+https://west-georgia-home-solutions.onrender.com/admin
+
+IMPORTANT
+Keep ADMIN_KEY only in Render Environment Variables. Do not place it in GitHub.
