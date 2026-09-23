@@ -78,7 +78,16 @@ table{width:100%;border-collapse:collapse;min-width:800px}th,td{text-align:left;
   </div>
   <div id="leadTable"></div>
 </div>
-  <div class="tablewrap"><h2>Founding Contractor Applications</h2><div id="partnerTable"></div></div>
+  <div class="tablewrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <h2>Founding Contractor Applications</h2>
+        <div class="toolbar">
+          <button class="action-btn" onclick="exportContractorsCSV()">Export CSV</button>
+          <button class="action-btn" onclick="loadDashboard(sessionStorage.getItem('wghs_admin_key'))">Refresh</button>
+        </div>
+      </div>
+      <div id="partnerTable"></div>
+    </div>
 </section>
 
 
@@ -119,12 +128,59 @@ table{width:100%;border-collapse:collapse;min-width:800px}th,td{text-align:left;
   </div>
 </div>
 
+
+<div id="contractorEditModal" class="modal-bg hide">
+  <div class="modal-card">
+    <h2>Edit Contractor</h2>
+    <form id="contractorEditForm">
+      <input type="hidden" id="editContractorId">
+      <div class="form-grid">
+        <label>Business Name<input id="editBusinessName" required></label>
+        <label>Contact Name<input id="editContactName" required></label>
+        <label>Phone<input id="editContractorPhone"></label>
+        <label>Email<input id="editContractorEmail" type="email"></label>
+        <label>Service<input id="editContractorService" required></label>
+        <label>Plan Type<input id="editPlanType"></label>
+        <label class="full">Service Area<input id="editServiceArea"></label>
+        <label>License Number<input id="editLicenseNumber"></label>
+        <label>Insured
+          <select id="editInsured">
+            <option value="true">Yes</option>
+            <option value="false">No</option>
+          </select>
+        </label>
+        <label>Max Leads / Week<input id="editMaxLeads" type="number" min="0"></label>
+        <label>Free Leads Remaining<input id="editFreeLeads" type="number" min="0"></label>
+        <label>Exclusive
+          <select id="editExclusive">
+            <option value="false">No</option>
+            <option value="true">Yes</option>
+          </select>
+        </label>
+        <label>Status
+          <select id="editContractorActive">
+            <option value="false">Pending / Inactive</option>
+            <option value="true">Approved / Active</option>
+          </select>
+        </label>
+        <label class="full">Notes<textarea id="editContractorNotes"></textarea></label>
+      </div>
+      <div class="modal-actions">
+        <button class="btn secondary" type="button" onclick="closeContractorEditor()">Cancel</button>
+        <button class="btn primary" type="submit" style="width:auto;margin-top:0">Save Changes</button>
+      </div>
+      <div id="contractorEditError" class="error"></div>
+    </form>
+  </div>
+</div>
+
 <script>
 const login=document.getElementById("login");
 const dashboard=document.getElementById("dashboard");
 const form=document.getElementById("loginForm");
 const errorBox=document.getElementById("loginError");
 let currentLeads=[];
+let currentPartners=[];
 
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 
@@ -173,6 +229,7 @@ async function loadDashboard(key){
     }
 
     const l=lj.leads||[], p=(pr.ok&&pj.ok)?(pj.partners||[]):[];
+    currentPartners=p;
     currentLeads=l;
     document.getElementById("sTotal").textContent=l.length;
     document.getElementById("sRevenue").textContent="$"+l.reduce((a,x)=>a+(+x.lead_value||0),0).toLocaleString();
@@ -180,7 +237,7 @@ async function loadDashboard(key){
     document.getElementById("sUnmatched").textContent=l.filter(x=>x.status==="unmatched").length;
     document.getElementById("leadTable").innerHTML=l.length?`<table><thead><tr><th>Date</th><th>Service</th><th>Name</th><th>Phone</th><th>Email</th><th>City/ZIP</th><th>Project</th><th>Status</th><th>Actions</th></tr></thead><tbody>${l.map(x=>`<tr><td>${new Date(x.created_at).toLocaleString()}</td><td>${esc(x.service)}</td><td>${esc(x.customer_name)}</td><td>${esc(x.phone)}</td><td>${esc(x.email)}</td><td>${esc(x.city||"")} ${esc(x.zip_code)}</td><td>${esc(x.project_type||"")}</td><td>${esc(x.status)}</td><td><div class="toolbar"><button class="action-btn" onclick="openLeadEditor('${x.id}')">Edit</button><button class="action-btn delete-btn" onclick="deleteLead('${x.id}')">Delete</button></div></td></tr>`).join("")}</tbody></table>`:`<p class="muted">No homeowner leads yet.</p>`;
     if(pr.ok && pj.ok){
-      document.getElementById("partnerTable").innerHTML=p.length?`<table><thead><tr><th>Date</th><th>Business</th><th>Contact</th><th>Phone</th><th>Email</th><th>Service</th><th>Area</th><th>Status</th></tr></thead><tbody>${p.map(x=>`<tr><td>${new Date(x.created_at).toLocaleString()}</td><td>${esc(x.business_name)}</td><td>${esc(x.contact_name)}</td><td>${esc(x.phone)}</td><td>${esc(x.email)}</td><td>${esc(x.service)}</td><td>${esc(x.service_area||"")}</td><td>${x.active?"Active":"Pending"}</td></tr>`).join("")}</tbody></table>`:`<p class="muted">No contractor applications yet.</p>`;
+      document.getElementById("partnerTable").innerHTML=p.length?`<table><thead><tr><th>Date</th><th>Business</th><th>Contact</th><th>Phone</th><th>Email</th><th>Service</th><th>Area</th><th>Status</th><th>Actions</th></tr></thead><tbody>${p.map(x=>`<tr><td>${new Date(x.created_at).toLocaleString()}</td><td>${esc(x.business_name)}</td><td>${esc(x.contact_name)}</td><td>${esc(x.phone)}</td><td>${esc(x.email)}</td><td>${esc(x.service)}</td><td>${esc(x.service_area||"")}</td><td>${x.active?"Approved":"Pending"}</td><td><div class="toolbar"><button class="action-btn" onclick="openContractorEditor('${x.id}')">Edit</button>${x.active?`<button class="action-btn" onclick="setContractorActive('${x.id}',false)">Deactivate</button>`:`<button class="action-btn" onclick="setContractorActive('${x.id}',true)">Approve</button>`}<button class="action-btn delete-btn" onclick="deleteContractor('${x.id}')">Delete</button></div></td></tr>`).join("")}</tbody></table>`:`<p class="muted">No contractor applications yet.</p>`;
     }
   }catch(e){
     alert("Unable to load admin data.");
@@ -281,6 +338,135 @@ function exportLeadsCSV(){
   const a=document.createElement("a");
   a.href=url;
   a.download=`wghs-leads-${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+
+function openContractorEditor(id){
+  const x=currentPartners.find(v=>v.id===id);
+  if(!x){alert("Contractor application not found. Refresh the dashboard.");return;}
+
+  document.getElementById("editContractorId").value=x.id;
+  document.getElementById("editBusinessName").value=x.business_name||"";
+  document.getElementById("editContactName").value=x.contact_name||"";
+  document.getElementById("editContractorPhone").value=x.phone||"";
+  document.getElementById("editContractorEmail").value=x.email||"";
+  document.getElementById("editContractorService").value=x.service||"";
+  document.getElementById("editPlanType").value=x.plan_type||"Founding Partner";
+  document.getElementById("editServiceArea").value=x.service_area||"";
+  document.getElementById("editLicenseNumber").value=x.license_number||"";
+  document.getElementById("editInsured").value=String(Boolean(x.insured));
+  document.getElementById("editMaxLeads").value=x.max_leads_per_week??3;
+  document.getElementById("editFreeLeads").value=x.free_leads_remaining??3;
+  document.getElementById("editExclusive").value=String(Boolean(x.exclusive));
+  document.getElementById("editContractorActive").value=String(Boolean(x.active));
+  document.getElementById("editContractorNotes").value=x.notes||"";
+  document.getElementById("contractorEditError").textContent="";
+  document.getElementById("contractorEditModal").classList.remove("hide");
+}
+
+function closeContractorEditor(){
+  document.getElementById("contractorEditModal").classList.add("hide");
+}
+
+document.getElementById("contractorEditForm").addEventListener("submit",async(e)=>{
+  e.preventDefault();
+  const key=sessionStorage.getItem("wghs_admin_key");
+  const id=document.getElementById("editContractorId").value;
+  const body={
+    business_name:document.getElementById("editBusinessName").value.trim(),
+    contact_name:document.getElementById("editContactName").value.trim(),
+    phone:document.getElementById("editContractorPhone").value.trim(),
+    email:document.getElementById("editContractorEmail").value.trim(),
+    service:document.getElementById("editContractorService").value.trim(),
+    plan_type:document.getElementById("editPlanType").value.trim(),
+    service_area:document.getElementById("editServiceArea").value.trim(),
+    license_number:document.getElementById("editLicenseNumber").value.trim(),
+    insured:document.getElementById("editInsured").value==="true",
+    max_leads_per_week:Number(document.getElementById("editMaxLeads").value||0),
+    free_leads_remaining:Number(document.getElementById("editFreeLeads").value||0),
+    exclusive:document.getElementById("editExclusive").value==="true",
+    active:document.getElementById("editContractorActive").value==="true",
+    founding_partner:true,
+    notes:document.getElementById("editContractorNotes").value.trim()
+  };
+
+  try{
+    const r=await fetch("/api/admin/partners/"+encodeURIComponent(id),{
+      method:"PATCH",
+      headers:{"Content-Type":"application/json","x-admin-key":key},
+      body:JSON.stringify(body)
+    });
+    const j=await r.json();
+    if(!r.ok||!j.ok) throw new Error(j.error||"Unable to update contractor");
+    closeContractorEditor();
+    await loadDashboard(key);
+  }catch(err){
+    document.getElementById("contractorEditError").textContent=err.message;
+  }
+});
+
+async function setContractorActive(id,active){
+  const x=currentPartners.find(v=>v.id===id);
+  const name=x?.business_name||"this contractor";
+  const verb=active?"approve":"deactivate";
+  if(!confirm(`${verb.charAt(0).toUpperCase()+verb.slice(1)} ${name}?`)) return;
+
+  const key=sessionStorage.getItem("wghs_admin_key");
+  const endpoint=active?"approve":"deactivate";
+
+  try{
+    const r=await fetch(`/api/admin/partners/${encodeURIComponent(id)}/${endpoint}`,{
+      method:"POST",
+      headers:{"x-admin-key":key}
+    });
+    const j=await r.json();
+    if(!r.ok||!j.ok) throw new Error(j.error||`Unable to ${verb} contractor`);
+    await loadDashboard(key);
+  }catch(err){
+    alert(`${verb.charAt(0).toUpperCase()+verb.slice(1)} failed: ${err.message}`);
+  }
+}
+
+async function deleteContractor(id){
+  const x=currentPartners.find(v=>v.id===id);
+  const name=x?.business_name||"this contractor";
+  if(!confirm(`Delete ${name}? This permanently removes the contractor application.`)) return;
+
+  const key=sessionStorage.getItem("wghs_admin_key");
+  try{
+    const r=await fetch("/api/admin/partners/"+encodeURIComponent(id),{
+      method:"DELETE",
+      headers:{"x-admin-key":key}
+    });
+    const j=await r.json();
+    if(!r.ok||!j.ok) throw new Error(j.error||"Unable to delete contractor");
+    await loadDashboard(key);
+  }catch(err){
+    alert("Delete failed: "+err.message);
+  }
+}
+
+function exportContractorsCSV(){
+  if(!currentPartners.length){alert("There are no contractor applications to export.");return;}
+  const headers=[
+    "Date","Business","Contact","Phone","Email","Service","Service Area","License",
+    "Insured","Max Leads/Week","Free Leads Remaining","Exclusive","Status","Plan","Notes","Contractor ID"
+  ];
+  const rows=currentPartners.map(x=>[
+    x.created_at,x.business_name,x.contact_name,x.phone,x.email,x.service,x.service_area,
+    x.license_number,x.insured?"Yes":"No",x.max_leads_per_week,x.free_leads_remaining,
+    x.exclusive?"Yes":"No",x.active?"Approved":"Pending",x.plan_type,x.notes,x.id
+  ]);
+  const csv=[headers,...rows].map(r=>r.map(csvCell).join(",")).join("\r\n");
+  const blob=new Blob([csv],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=`wghs-contractors-${new Date().toISOString().slice(0,10)}.csv`;
   document.body.appendChild(a);
   a.click();
   a.remove();

@@ -1,29 +1,37 @@
-ADMIN LEAD MANAGEMENT UPDATE
+ADMIN CONTRACTOR MANAGEMENT UPDATE
 
-WHAT'S NEW
-- Edit homeowner leads from the private admin dashboard.
-- Change customer/contact information, project details, status, ZIP/city, and lead value.
-- Delete leads with confirmation.
-- Export all currently loaded leads to CSV.
-- Refresh button remains available.
-- All edit/delete API calls require the existing ADMIN_KEY.
+WHAT "PENDING" MEANS
+A new contractor application is saved with active=false.
+Pending means you have received it but have not approved that contractor for active use.
+
+WHAT APPROVE DOES
+The new Approve button changes active=true.
+The dashboard then displays Approved.
+You can later Deactivate the contractor, which sets active=false again.
+
+NEW CONTRACTOR ADMIN FEATURES
+- Edit contractor application
+- Approve contractor
+- Deactivate approved contractor
+- Delete contractor application
+- Export contractor applications to CSV
+- Edit service area, license, insurance, weekly lead limit, free leads remaining,
+  exclusivity, plan type, notes, contact info, service and approval status.
 
 UPLOAD TO GITHUB
 Replace:
 1. public/admin.html
 2. server/server.js
 
-public/index.html is included for completeness but does not need to be replaced if the current contractor form is already working.
+No Supabase migration is required if you already ran the Founding Contractor migration.
 
-THEN
-Let Render auto-deploy or use Manual Deploy -> Deploy latest commit.
+Then let Render redeploy.
 
 TEST
 1. Open /admin.
-2. Click Edit on a test homeowner lead.
-3. Change Status to Contacted and save.
-4. Refresh; verify the change remains.
-5. Click Export CSV and confirm the file downloads.
-6. Create a disposable test lead and use Delete; confirm it disappears after refresh.
-
-DELETE IS PERMANENT.
+2. Find a Pending contractor.
+3. Click Approve.
+4. Confirm status changes to Approved.
+5. Click Edit and change a field.
+6. Refresh and confirm the edit persists.
+7. Test Export CSV.

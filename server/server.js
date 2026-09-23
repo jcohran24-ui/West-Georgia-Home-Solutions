@@ -224,6 +224,127 @@ app.delete("/api/admin/leads/:id",admin,async(req,res)=>{
   }
 });
 
+
+app.patch("/api/admin/partners/:id",admin,async(req,res)=>{
+  try{
+    const id=String(req.params.id||"").trim();
+    if(!id) return res.status(400).json({ok:false,error:"Missing contractor id"});
+
+    const b=req.body||{};
+    const allowed=[
+      "business_name","contact_name","phone","email","service","plan_type",
+      "active","exclusive","service_area","license_number","insured",
+      "max_leads_per_week","notes","founding_partner","free_leads_remaining"
+    ];
+    const updates={};
+
+    for(const key of allowed){
+      if(Object.prototype.hasOwnProperty.call(b,key)){
+        updates[key]=b[key];
+      }
+    }
+
+    if(Object.prototype.hasOwnProperty.call(updates,"active")){
+      updates.active=Boolean(updates.active);
+    }
+    if(Object.prototype.hasOwnProperty.call(updates,"exclusive")){
+      updates.exclusive=Boolean(updates.exclusive);
+    }
+    if(Object.prototype.hasOwnProperty.call(updates,"insured")){
+      updates.insured=Boolean(updates.insured);
+    }
+    if(Object.prototype.hasOwnProperty.call(updates,"founding_partner")){
+      updates.founding_partner=Boolean(updates.founding_partner);
+    }
+    if(Object.prototype.hasOwnProperty.call(updates,"max_leads_per_week")){
+      updates.max_leads_per_week=Number(updates.max_leads_per_week||0);
+    }
+    if(Object.prototype.hasOwnProperty.call(updates,"free_leads_remaining")){
+      updates.free_leads_remaining=Number(updates.free_leads_remaining||0);
+    }
+
+    const {data,error}=await supabase
+      .from("contractors")
+      .update(updates)
+      .eq("id",id)
+      .select("*")
+      .single();
+
+    if(error){
+      console.error("Contractor update failed:",error);
+      return res.status(500).json({ok:false,error:error.message});
+    }
+
+    return res.json({ok:true,contractor:data});
+  }catch(e){
+    console.error("Contractor edit endpoint exception:",e);
+    return res.status(500).json({ok:false,error:e.message});
+  }
+});
+
+app.post("/api/admin/partners/:id/approve",admin,async(req,res)=>{
+  try{
+    const id=String(req.params.id||"").trim();
+    const {data,error}=await supabase
+      .from("contractors")
+      .update({active:true})
+      .eq("id",id)
+      .select("*")
+      .single();
+
+    if(error){
+      console.error("Contractor approval failed:",error);
+      return res.status(500).json({ok:false,error:error.message});
+    }
+
+    return res.json({ok:true,contractor:data});
+  }catch(e){
+    return res.status(500).json({ok:false,error:e.message});
+  }
+});
+
+app.post("/api/admin/partners/:id/deactivate",admin,async(req,res)=>{
+  try{
+    const id=String(req.params.id||"").trim();
+    const {data,error}=await supabase
+      .from("contractors")
+      .update({active:false})
+      .eq("id",id)
+      .select("*")
+      .single();
+
+    if(error){
+      console.error("Contractor deactivation failed:",error);
+      return res.status(500).json({ok:false,error:error.message});
+    }
+
+    return res.json({ok:true,contractor:data});
+  }catch(e){
+    return res.status(500).json({ok:false,error:e.message});
+  }
+});
+
+app.delete("/api/admin/partners/:id",admin,async(req,res)=>{
+  try{
+    const id=String(req.params.id||"").trim();
+    const {data,error}=await supabase
+      .from("contractors")
+      .delete()
+      .eq("id",id)
+      .select("id")
+      .single();
+
+    if(error){
+      console.error("Contractor delete failed:",error);
+      return res.status(500).json({ok:false,error:error.message});
+    }
+
+    return res.json({ok:true,deleted_id:data.id});
+  }catch(e){
+    return res.status(500).json({ok:false,error:e.message});
+  }
+});
+
 app.get("/api/admin/partners",admin,async(req,res)=>{
   try{
     const {data,error,count}=await supabase
