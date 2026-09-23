@@ -24,13 +24,19 @@ const SERVICE_ZIPS = {"30110":"Bremen","30117":"Carrollton","30179":"Temple","30
 const PRICE = {"Sell My House Fast":125,"Roofing":65,"HVAC":50,"Concrete":45,"Tree Removal":40,"Electrical":50,"Drywall Finishing":35,"Painting":35,"Plumbing":50};
 
 
+
+app.get("/contractors", (req,res) => {
+  res.setHeader("Cache-Control","no-store, no-cache, must-revalidate, proxy-revalidate");
+  res.sendFile(path.join(__dirname, "..", "public", "index.html"));
+});
+
 app.get("/admin", (req,res) => {
   res.sendFile(path.join(__dirname, "..", "public", "admin.html"));
 });
 
 app.get("/health",(req,res)=>res.json({ok:true,supabaseConfigured:Boolean(process.env.SUPABASE_URL&&process.env.SUPABASE_SECRET_KEY)}));
 
-app.get("/version",(req,res)=>res.json({ok:true,build:"WGHS-2026-09-23-MASTER-1"}));
+app.get("/version",(req,res)=>res.json({ok:true,build:"WGHS-2026-09-23-MASTER-2"}));
 
 app.post("/api/leads", async (req,res)=>{
   try{
