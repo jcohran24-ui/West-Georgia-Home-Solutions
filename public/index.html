@@ -4,6 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>West Georgia Home Solutions</title>
+<!-- Google Ads site-wide tag. Conversion is sent only after a saved application. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-1050554266"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-1050554266');
+</script>
 <style>
 :root{--green:#1f5a37;--green2:#2f7448;--ink:#172018;--muted:#657067;--bg:#f6f8f5;--card:#fff;--line:#dfe5df}
 *{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
@@ -246,6 +254,12 @@ async function savePartner(e,plan){
     });
     const j=await r.json();
     if(!r.ok||!j.ok) throw new Error(j.error||"Unable to save application");
+    // Tracking failures must never turn a saved application into a form error.
+    try{
+      const conversion = {send_to:'AW-1050554266/9VlnCMXB-rUBEJrf-PQD'};
+      if(j.contractor_id) conversion.transaction_id=String(j.contractor_id);
+      gtag('event','conversion',conversion);
+    }catch(trackingError){console.warn('Conversion tracking unavailable:',trackingError);}
     e.target.reset();
     document.getElementById("contractorSuccessRef").textContent=j.contractor_id||"Submitted";
     document.getElementById("contractorSuccessModal").classList.remove("hide");
