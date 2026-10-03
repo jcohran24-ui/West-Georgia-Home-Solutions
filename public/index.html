@@ -38,6 +38,7 @@ footer{background:#172018;color:#dce5dd;padding:28px 20px;text-align:center}.fin
 .success-ref{margin:18px 0;padding:12px;background:#f6f8f5;border-radius:12px;font-size:13px;word-break:break-all}
 .success-modal .btn{margin-top:8px;min-width:180px}
 
+.contractor-layout{display:grid;grid-template-columns:1.1fr 1fr;gap:40px;align-items:start}.contractor-copy h1{font-size:clamp(34px,5vw,54px);line-height:1.08;margin:14px 0 20px}.contractor-copy>p{font-size:18px}.contractor-copy .trust{justify-content:flex-start;gap:12px;margin:22px 0}.contractor-copy h2{font-size:26px;margin-top:36px}.contractor-steps{padding-left:22px;line-height:1.6}.contractor-steps li{margin:14px 0}.contractor-layout .panel{margin:0;width:100%;scroll-margin-top:100px}.contractor-faq{padding-top:0}details{border-bottom:1px solid var(--line);padding:18px 0}summary{font-weight:700;cursor:pointer}details p{line-height:1.6;color:var(--muted)}.form-error{color:#a12727;line-height:1.5}.stack .btn{min-height:50px}@media(max-width:760px){.contractor-layout{grid-template-columns:1fr;gap:24px;padding-top:28px}.contractor-copy .contractor-steps,.contractor-copy h2{display:none}.contractor-layout .panel{padding:20px}.contractor-copy>p{font-size:16px}}
 </style>
 </head>
 <body>
@@ -91,49 +92,25 @@ footer{background:#172018;color:#dce5dd;padding:28px 20px;text-align:center}.fin
 </section>
 
 <section id="partners" class="hide">
-  <div class="hero">
-    <div class="eyebrow">FOUNDING CONTRACTOR PROGRAM</div>
-    <h1>Be one of the first local pros in your service area.</h1>
-    <p>West Georgia Home Solutions is building a local homeowner referral network. We’re currently selecting founding contractors by trade and territory before we begin actively generating homeowner requests.</p>
-    <button class="btn primary" onclick="openPartnerForm('Founding Partner')">Reserve My Service Area</button>
-    <div class="trust"><span>✓ First 3 qualified leads free</span><span>✓ No contract</span><span>✓ Choose your territory</span></div>
+  <div class="contractor-layout section">
+    <div class="contractor-copy">
+      <div class="eyebrow">FOR WEST GEORGIA CONTRACTORS</div>
+      <h1>Get your first 3 qualified homeowner leads free.</h1>
+      <p class="muted">Connect with local homeowners who need your trade. Choose where you work and try our referral network with no setup fee or long-term contract.</p>
+      <div class="trust"><span>✓ First 3 qualified leads free</span><span>✓ No credit card required</span><span>✓ Choose your service area</span></div>
+      <button class="btn primary" onclick="openPartnerForm('Founding Partner')">Apply for My 3 Free Leads</button>
+      <h2>How it works</h2>
+      <ol class="contractor-steps"><li><strong>Tell us your trade and area.</strong> Submit the short application.</li><li><strong>We review your application.</strong> We contact you to confirm fit and any licensing or insurance requirements before activation.</li><li><strong>Receive matching requests as available.</strong> Your first 3 qualified leads are free. Any future pricing is discussed before you continue.</li></ol>
+      <p class="muted">Serving Bremen, Carrollton, Temple, Villa Rica, Douglasville, Dallas, Cedartown and Newnan.</p>
+      <p class="fine">We’re building our local network. Lead timing and volume depend on homeowner demand; joining does not guarantee immediate leads or booked jobs.</p>
+    </div>
+    <div id="partnerBox" class="panel"></div>
   </div>
-
-  <div class="section">
-    <div class="eyebrow">WHY JOIN EARLY?</div>
-    <h2>Founding Partner Benefits</h2>
-    <div class="price-grid">
-      <div class="card price">
-        <h3>3 Free Leads</h3>
-        <div class="amount">$0</div>
-        <div class="muted">to prove the service first</div>
-        <ul><li>Your first 3 qualified leads are free</li><li>No setup fee</li><li>No long-term contract</li></ul>
-      </div>
-      <div class="card price popular">
-        <div class="badge">FOUNDING PARTNER</div>
-        <h3>Priority Territory</h3>
-        <div class="amount">Early Access</div>
-        <div class="muted">before public rollout</div>
-        <ul><li>Choose counties and ZIP codes</li><li>Priority routing while available</li><li>Opportunity for future exclusivity</li></ul>
-      </div>
-      <div class="card price">
-        <h3>Pay Only After Trial</h3>
-        <div class="amount">No Risk</div>
-        <div class="muted">during the founding trial</div>
-        <ul><li>Review lead quality first</li><li>Future pricing discussed after trial</li><li>No guaranteed lead volume promised</li></ul>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:18px">
-      <h3 style="margin-top:0">What counts as a qualified lead?</h3>
-      <p class="muted">A homeowner who requests your service, provides valid contact information, and is located within the service area you selected. We are not promising that every lead becomes a job.</p>
-    </div>
-
-    <div style="text-align:center;margin-top:28px">
-      <button class="btn primary" onclick="openPartnerForm('Founding Partner')">Apply as a Founding Contractor</button>
-    </div>
-
-    <div id="partnerBox" class="panel hide"></div>
+  <div class="section contractor-faq">
+    <h2>Know what you’re signing up for</h2>
+    <details open><summary>What counts as a qualified lead?</summary><p>A homeowner who requests your service, provides valid contact information, and is within your selected service area. A lead is an opportunity to discuss a project, not a guaranteed job.</p></details>
+    <details><summary>What happens after the free leads?</summary><p>We discuss future pricing with you after the trial. There is no obligation to continue and no long-term contract.</p></details>
+    <details><summary>Do I need insurance or a license?</summary><p>We review the requirements for your trade before activation. You can submit this short application first; we’ll collect any additional details during review.</p></details>
   </div>
 </section>
 
@@ -217,13 +194,14 @@ async function submitLead(e){
     if(btn){btn.disabled=false;btn.textContent="Submit Request";}
   }
 }
-function openPartnerForm(plan){
+function openPartnerForm(plan,scroll=true){
   const b=document.getElementById("partnerBox");
   b.classList.remove("hide");
+  if(b.querySelector("form")){if(scroll)b.scrollIntoView({behavior:"smooth"});return;}
   b.innerHTML=`
     <div class="eyebrow">FOUNDING CONTRACTOR APPLICATION</div>
-    <h2>Reserve your service area</h2>
-    <p class="muted">There is no charge to apply. Founding partners receive their first 3 qualified leads free while we prove the program.</p>
+    <h2>Apply for your 3 free leads</h2>
+    <p class="muted">Just 6 fields. No payment information needed. We’ll contact you to review your application.</p>
     <form id="partnerApplicationForm" class="stack" method="post" action="/api/partners">
       <label>Business name<input name="business" required autocomplete="organization"></label>
       <label>Contact name<input name="name" required autocomplete="name"></label>
@@ -238,33 +216,24 @@ function openPartnerForm(plan){
           <option>Plumbing</option><option>Real Estate Investor</option>
         </select>
       </label>
-      <label>Counties / ZIP codes you want to cover
-        <textarea name="area" required placeholder="Example: Carroll, Haralson / 30110, 30117"></textarea>
-      </label>
-      <label>License number, if applicable<input name="license_number" placeholder="Optional"></label>
-      <label>Are you insured?
-        <select name="insured" required><option value="">Choose</option><option value="true">Yes</option><option value="false">No</option></select>
-      </label>
-      <label>Maximum leads you would like per week
-        <select name="max_leads_per_week" required>
-          <option value="3">Up to 3</option><option value="5">Up to 5</option>
-          <option value="10">Up to 10</option><option value="20">10+</option>
-        </select>
-      </label>
-      <label>Anything else we should know?
-        <textarea name="notes" placeholder="Services you prefer, areas you do not cover, minimum job size, etc."></textarea>
-      </label>
-      <button class="btn primary" type="submit">Reserve My Service Area</button>
+      <label>Service area<input name="area" required placeholder="Cities, counties or ZIP codes you serve"></label>
+      <p id="partnerError" class="form-error hide" role="alert"></p>
+      <button class="btn primary" type="submit">Apply for My 3 Free Leads</button>
+      <div class="fine">By applying, you agree that West Georgia Home Solutions may contact you about your application and the referral program.</div>
       <div class="fine">Submitting an application does not guarantee exclusivity or lead volume. Applications are reviewed before activation.</div>
     </form>`;
 
   const form=b.querySelector("#partnerApplicationForm");
   form.addEventListener("submit",(e)=>savePartner(e,plan));
 
-  b.scrollIntoView({behavior:"smooth"});
+  if(scroll)b.scrollIntoView({behavior:"smooth"});
 }
 async function savePartner(e,plan){
   e.preventDefault();
+  if(e.target.dataset.submitting==="true")return;
+  e.target.dataset.submitting="true";
+  const errorBox=document.getElementById("partnerError");
+  errorBox.classList.add("hide");
   let d=Object.fromEntries(new FormData(e.target).entries());
   d.plan=plan;
   const btn=e.target.querySelector("button[type=submit]");
@@ -282,9 +251,11 @@ async function savePartner(e,plan){
     document.getElementById("contractorSuccessModal").classList.remove("hide");
   }catch(err){
     console.error("Partner application failed:",err);
-    alert("We could not save your application: "+err.message);
+    errorBox.textContent="We could not save your application. Please try again. Your information is still in the form.";
+    errorBox.classList.remove("hide");
   }finally{
-    if(btn){btn.disabled=false;btn.textContent="Reserve My Service Area";}
+    e.target.dataset.submitting="false";
+    if(btn){btn.disabled=false;btn.textContent="Apply for My 3 Free Leads";}
   }
 }
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
@@ -298,6 +269,7 @@ function closeContractorSuccess(){
 function openPageForCurrentPath(){
   const path=window.location.pathname.replace(/\/+$/,"") || "/";
   if(path==="/contractors"){
+    openPartnerForm("Founding Partner",false);
     show("partners");
     document.title="Founding Contractor Program | West Georgia Home Solutions";
   }else{
@@ -305,7 +277,7 @@ function openPageForCurrentPath(){
   }
 }
 
-window.addEventListener("DOMContentLoaded",openPageForCurrentPath);
+window.addEventListener("DOMContentLoaded",()=>{openPartnerForm("Founding Partner",false);openPageForCurrentPath();});
 
 </script>
 </body>
